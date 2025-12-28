@@ -1,0 +1,8 @@
+
+{
+  "name": "GolfViet Premium",
+  "description": "A world-class golf booking platform for premium courses in Vietnam, featuring real-time availability, AI-powered course recommendations, and secure checkout.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
