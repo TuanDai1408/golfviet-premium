@@ -34,16 +34,16 @@ export const CourseDetail: React.FC = () => {
           <img src={course.image} className="absolute inset-0 w-full h-full object-cover" alt="" />
         </div>
         <div className="hidden md:block relative h-full">
-          <img src="https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&q=80&w=600" className="absolute inset-0 w-full h-full object-cover" alt="" />
+          <img src="/images/twin-doves.png" className="absolute inset-0 w-full h-full object-cover" alt="" />
         </div>
         <div className="hidden md:block relative h-full">
-          <img src="https://images.unsplash.com/photo-1592919016381-f0796ee2d00a?auto=format&fit=crop&q=80&w=600" className="absolute inset-0 w-full h-full object-cover" alt="" />
+          <img src="/images/da-nang.png" className="absolute inset-0 w-full h-full object-cover" alt="" />
         </div>
         <div className="hidden md:block relative h-full">
-          <img src="https://images.unsplash.com/photo-1623348646971-793836040801?auto=format&fit=crop&q=80&w=600" className="absolute inset-0 w-full h-full object-cover" alt="" />
+          <img src="/images/tan-son-nhat.png" className="absolute inset-0 w-full h-full object-cover" alt="" />
         </div>
         <div className="hidden md:block relative h-full">
-          <img src="https://images.unsplash.com/photo-1610444583731-971759547f4f?auto=format&fit=crop&q=80&w=600" className="absolute inset-0 w-full h-full object-cover" alt="" />
+          <img src="/images/hoiana.png" className="absolute inset-0 w-full h-full object-cover" alt="" />
         </div>
       </div>
 

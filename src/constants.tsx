@@ -20,7 +20,7 @@ export const MOCK_COURSES: Course[] = [
     rating: 4.9,
     reviews: 245,
     price: 3500000,
-    image: 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&q=80&w=1200',
+    image: '/images/twin-doves.png',
     isRecommended: true,
     verified: true
   },
@@ -38,7 +38,7 @@ export const MOCK_COURSES: Course[] = [
     reviews: 124,
     price: 2200000,
     originalPrice: 2400000,
-    image: 'https://images.unsplash.com/photo-1592919016381-f0796ee2d00a?auto=format&fit=crop&q=80&w=1200',
+    image: '/images/da-nang.png',
     deal: '-15% TODAY',
     verified: true
   },
@@ -54,7 +54,7 @@ export const MOCK_COURSES: Course[] = [
     rating: 4.7,
     reviews: 512,
     price: 2500000,
-    image: 'https://images.unsplash.com/photo-1623348646971-793836040801?auto=format&fit=crop&q=80&w=1200',
+    image: '/images/tan-son-nhat.png',
     verified: true
   },
   {
@@ -69,7 +69,7 @@ export const MOCK_COURSES: Course[] = [
     rating: 4.9,
     reviews: 89,
     price: 3500000,
-    image: 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?auto=format&fit=crop&q=80&w=1200',
+    image: '/images/hoiana.png',
     isRecommended: true
   },
   {
@@ -84,7 +84,7 @@ export const MOCK_COURSES: Course[] = [
     rating: 4.8,
     reviews: 156,
     price: 4100000,
-    image: 'https://images.unsplash.com/photo-1610444583731-971759547f4f?auto=format&fit=crop&q=80&w=1200',
+    image: '/images/the-bluffs.png',
     deal: '-10% DEAL'
   }
 ];
