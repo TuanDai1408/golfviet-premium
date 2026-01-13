@@ -2,14 +2,41 @@
 // Component trang danh sách sân - tìm kiếm và lọc các sân golf có sẵn
 // Course list page component - search and filter available golf courses
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useMemo } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { MOCK_COURSES } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext'; // 언어 훅 / Hook ngôn ngữ / Language hook
 
 // 코스 목록 페이지 컴포넌트 / Component trang danh sách sân / Course list page component
 export const CourseList: React.FC = () => {
   const { t } = useLanguage(); // 번역 객체 가져오기 / Lấy đối tượng dịch / Get translation object
+  const [searchParams] = useSearchParams();
+
+  // URL 파라미터에서 초기 필터 값 가져오기 / Lấy giá trị filter ban đầu từ URL params / Get initial filter values from URL params
+  const cityFromUrl = searchParams.get('city');
+  const initialRegions = cityFromUrl ? [cityFromUrl] : ['Hanoi', 'Da Nang', 'Ho Chi Minh City'];
+
+  // 선택된 지역 상태 관리 / Quản lý trạng thái khu vực được chọn / Manage selected regions state
+  const [selectedRegions, setSelectedRegions] = useState<string[]>(initialRegions);
+
+  // 지역 필터 토글 핸들러 / Handler bật/tắt bộ lọc khu vực / Region filter toggle handler
+  const toggleRegion = (region: string) => {
+    setSelectedRegions(prev => {
+      if (prev.includes(region)) {
+        return prev.filter(r => r !== region);
+      } else {
+        return [...prev, region];
+      }
+    });
+  };
+
+  // 필터링된 코스 목록 / Danh sách sân đã lọc / Filtered course list
+  const filteredCourses = useMemo(() => {
+    if (selectedRegions.length === 0) {
+      return MOCK_COURSES;
+    }
+    return MOCK_COURSES.filter(course => selectedRegions.includes(course.city));
+  }, [selectedRegions]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8">
@@ -28,14 +55,18 @@ export const CourseList: React.FC = () => {
           <h3 className="font-bold mb-4">{t.courseList.region}</h3>
           <div className="space-y-3">
             {[
-              `${t.cities.hanoi} / North`,
-              `${t.cities.daNang} / Central`,
-              `${t.cities.hoChiMinh} / South`,
-              t.cities.nhaTrang
-            ].map((region, idx) => (
-              <label key={region} className="flex items-center gap-3 cursor-pointer">
-                <input type="checkbox" className="rounded text-primary focus:ring-primary border-gray-300" defaultChecked={idx === 1} />
-                <span className="text-sm font-medium">{region}</span>
+              { label: `${t.cities.hanoi} / North`, value: 'Hanoi' },
+              { label: `${t.cities.daNang} / Central`, value: 'Da Nang' },
+              { label: `${t.cities.hoChiMinh} / South`, value: 'Ho Chi Minh City' }
+            ].map((region) => (
+              <label key={region.value} className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  className="rounded text-primary focus:ring-primary border-gray-300"
+                  checked={selectedRegions.includes(region.value)}
+                  onChange={() => toggleRegion(region.value)}
+                />
+                <span className="text-sm font-medium">{region.label}</span>
               </label>
             ))}
           </div>
@@ -44,7 +75,7 @@ export const CourseList: React.FC = () => {
         {/* 날짜 및 시간 필터 / Bộ lọc ngày và giờ / Date and time filter */}
         <div>
           <h3 className="font-bold mb-4">{t.courseList.dateTime}</h3>
-          <input type="date" className="w-full rounded-xl border-gray-200 bg-gray-50 p-3 text-sm font-medium" defaultValue="2023-10-25" />
+          <input type="date" className="w-full rounded-xl border-gray-200 bg-gray-50 p-3 text-sm font-medium" defaultValue={searchParams.get('date') || '2023-10-25'} />
           <div className="flex gap-2 mt-3">
             {['AM', 'PM', t.common.twilight].map((time, idx) => (
               <button key={time} className={`flex-1 py-2 text-xs font-bold rounded-lg border ${idx === 1 ? 'bg-primary text-white border-primary' : 'border-gray-200 text-gray-500'}`}>{time}</button>
@@ -58,7 +89,7 @@ export const CourseList: React.FC = () => {
         {/* 헤더 / Header / Header */}
         <div className="flex flex-col sm:flex-row items-center justify-between mb-8 gap-4">
           <div>
-            <h2 className="text-2xl font-bold">8 {t.courseList.availableCourses}</h2>
+            <h2 className="text-2xl font-bold">{filteredCourses.length} {t.courseList.availableCourses}</h2>
             <p className="text-sm text-gray-500">{t.courseList.showingBestMatches}</p>
           </div>
           <button className="flex items-center gap-2 bg-white px-4 py-2.5 rounded-xl border border-gray-200 shadow-sm text-sm font-bold">
@@ -68,7 +99,7 @@ export const CourseList: React.FC = () => {
 
         {/* 코스 카드 그리드 / Lưới thẻ sân / Course card grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
-          {MOCK_COURSES.map(course => (
+          {filteredCourses.map(course => (
             <Link to={`/course/${course.id}`} key={course.id} className="group bg-white dark:bg-surface-dark rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all border border-gray-100 dark:border-white/5">
               {/* 코스 이미지 / Hình ảnh sân / Course image */}
               <div className="relative h-48 overflow-hidden">

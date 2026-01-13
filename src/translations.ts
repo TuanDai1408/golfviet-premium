@@ -35,6 +35,7 @@ export interface Translations {
         trustDesc2: string;
         trustTitle3: string;
         trustDesc3: string;
+        allLocations: string;
     };
 
     // 대시보드 / Bảng điều khiển / Dashboard
@@ -206,6 +207,7 @@ export const ko: Translations = {
         trustDesc2: '여러 언어로 연중무휴 고객 서비스 제공.',
         trustTitle3: '최저가 보장',
         trustDesc3: '회원 전용 요금. 숨겨진 예약 수수료 없음.',
+        allLocations: '모든 지역',
     },
     dashboard: {
         title: '내 예약',
@@ -359,6 +361,7 @@ export const vi: Translations = {
         trustDesc2: 'Dịch vụ khách hàng 24/7 có sẵn bằng nhiều ngôn ngữ.',
         trustTitle3: 'Đảm bảo giá tốt nhất',
         trustDesc3: 'Giá độc quyền cho thành viên. Không có phí đặt chỗ ẩn.',
+        allLocations: 'Tất cả địa điểm',
     },
     dashboard: {
         title: 'Đặt chỗ của tôi',
@@ -512,6 +515,7 @@ export const en: Translations = {
         trustDesc2: '24/7 customer service available in multiple languages.',
         trustTitle3: 'Best Price Guarantee',
         trustDesc3: 'Exclusive rates for members. No hidden booking fees.',
+        allLocations: 'All Locations',
     },
     dashboard: {
         title: 'My Bookings',
