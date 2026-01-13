@@ -2,14 +2,42 @@
 // Component trang chủ - trang landing chính
 // Home page component - main landing page
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useMemo } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { MOCK_COURSES } from '../constants';
 import { useLanguage } from '../contexts/LanguageContext'; // 언어 훅 / Hook ngôn ngữ / Language hook
 
 // 홈 페이지 컴포넌트 / Component trang chủ / Home page component
 export const Home: React.FC = () => {
   const { t } = useLanguage(); // 번역 객체 가져오기 / Lấy đối tượng dịch / Get translation object
+  const navigate = useNavigate();
+
+  // 선택된 지역 상태 / Trạng thái khu vực được chọn / Selected location state
+  const [selectedCity, setSelectedCity] = useState<string>('All');
+  const [selectedDate, setSelectedDate] = useState<string>('2023-10-25');
+
+  // 검색 핸들러 / Handler tìm kiếm / Search handler
+  const handleSearch = () => {
+    const params = new URLSearchParams();
+    if (selectedCity !== 'All') {
+      params.append('city', selectedCity);
+    }
+    if (selectedDate) {
+      params.append('date', selectedDate);
+    }
+    navigate(`/courses${params.toString() ? '?' + params.toString() : ''}`);
+  };
+
+  // 필터링된 코스 목록 (상위 6개) / Danh sách sân đã lọc (top 6) / Filtered course list (top 6)
+  const displayedCourses = useMemo(() => {
+    let filteredCourses = MOCK_COURSES;
+
+    if (selectedCity !== 'All') {
+      filteredCourses = MOCK_COURSES.filter(course => course.city === selectedCity);
+    }
+
+    return filteredCourses.slice(0, 6);
+  }, [selectedCity]);
 
   return (
     <div className="flex flex-col w-full">
@@ -50,10 +78,15 @@ export const Home: React.FC = () => {
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.home.location}</label>
                 <div className="relative flex items-center h-14 bg-gray-50 rounded-xl px-4 border border-transparent focus-within:border-primary">
                   <span className="material-symbols-outlined text-gray-400 mr-2">location_on</span>
-                  <select className="bg-transparent border-none focus:ring-0 w-full font-bold text-lg">
-                    <option>{t.cities.daNang} / Hoi An</option>
-                    <option>{t.cities.hoChiMinh}</option>
-                    <option>{t.cities.hanoi}</option>
+                  <select
+                    className="bg-transparent border-none focus:ring-0 w-full font-bold text-lg"
+                    value={selectedCity}
+                    onChange={(e) => setSelectedCity(e.target.value)}
+                  >
+                    <option value="All">{t.home.allLocations}</option>
+                    <option value="Hanoi">{t.cities.hanoi}</option>
+                    <option value="Da Nang">{t.cities.daNang}</option>
+                    <option value="Ho Chi Minh City">{t.cities.hoChiMinh}</option>
                   </select>
                 </div>
               </div>
@@ -63,15 +96,23 @@ export const Home: React.FC = () => {
                 <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">{t.home.date}</label>
                 <div className="relative flex items-center h-14 bg-gray-50 rounded-xl px-4 border border-transparent focus-within:border-primary">
                   <span className="material-symbols-outlined text-gray-400 mr-2">calendar_month</span>
-                  <input type="date" className="bg-transparent border-none focus:ring-0 w-full font-bold text-lg" defaultValue="2023-10-25" />
+                  <input
+                    type="date"
+                    className="bg-transparent border-none focus:ring-0 w-full font-bold text-lg"
+                    value={selectedDate}
+                    onChange={(e) => setSelectedDate(e.target.value)}
+                  />
                 </div>
               </div>
 
               {/* 검색 버튼 / Nút tìm kiếm / Search button */}
-              <Link to="/courses" className="w-full md:w-auto h-14 bg-black text-primary px-8 rounded-xl flex items-center justify-center gap-2 font-bold text-lg hover:bg-gray-900 transition-all">
+              <button
+                onClick={handleSearch}
+                className="w-full md:w-auto h-14 bg-black text-primary px-8 rounded-xl flex items-center justify-center gap-2 font-bold text-lg hover:bg-gray-900 transition-all cursor-pointer"
+              >
                 <span className="material-symbols-outlined">search</span>
                 {t.home.search}
-              </Link>
+              </button>
             </div>
           </div>
         </div>
@@ -84,7 +125,12 @@ export const Home: React.FC = () => {
             <h2 className="text-3xl font-bold flex items-center gap-2">
               {t.home.popularCourses} <span className="material-symbols-outlined text-red-500">local_fire_department</span>
             </h2>
-            <p className="text-gray-500 mt-2">{t.home.popularCoursesDesc}</p>
+            <p className="text-gray-500 mt-2">
+              {selectedCity === 'All'
+                ? t.home.popularCoursesDesc
+                : `${t.home.popularCoursesDesc} - ${selectedCity === 'Hanoi' ? t.cities.hanoi : selectedCity === 'Da Nang' ? t.cities.daNang : t.cities.hoChiMinh}`
+              }
+            </p>
           </div>
           <Link to="/courses" className="text-primary font-bold hover:underline flex items-center gap-1">
             {t.home.viewAll} <span className="material-symbols-outlined text-sm">arrow_forward</span>
@@ -93,13 +139,18 @@ export const Home: React.FC = () => {
 
         {/* 코스 그리드 / Lưới sân / Course grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {MOCK_COURSES.slice(0, 3).map(course => (
+          {displayedCourses.map(course => (
             <Link to={`/course/${course.id}`} key={course.id} className="group flex flex-col">
               <div className="relative h-64 rounded-2xl overflow-hidden mb-4">
                 <img src={course.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={course.name} />
                 {course.isRecommended && (
                   <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm px-3 py-1 rounded-lg border border-white/10">
                     <span className="text-xs font-bold text-primary">{t.home.recommended.toUpperCase()}</span>
+                  </div>
+                )}
+                {course.deal && (
+                  <div className="absolute top-4 right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded">
+                    {course.deal}
                   </div>
                 )}
                 <div className="absolute bottom-4 right-4 bg-white px-2 py-1 rounded-lg shadow-lg flex items-center gap-1">
@@ -151,6 +202,54 @@ export const Home: React.FC = () => {
           </div>
         </div>
       </section>
+
+      {/* Contact Widget */}
+      <div className="fixed bottom-8 right-8 z-50 flex flex-col gap-3 animate-fade-in-up">
+        {/* Zalo */}
+        <Link
+          to="/zalo-contact"
+          className="size-14 rounded-full bg-white shadow-lg flex items-center justify-center hover:scale-110 transition-transform group relative overflow-hidden ring-1 ring-gray-100"
+        >
+          {/* Zalo Icon từ link trực tiếp */}
+          <img
+            src="https://page.widget.zalo.me/static/images/2.0/Logo.svg"
+            alt="Zalo Icon"
+            className="w-10 h-10 object-contain"
+          />
+
+          <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            Chat Zalo
+          </div>
+        </Link>
+
+
+        {/* KakaoTalk */}
+        <a
+          href="http://qr.kakao.com/talk/3J9sgdynZQ7vgHeZRYuUPysxqxU-"
+          target="_blank"
+          rel="noreferrer"
+          className="size-14 rounded-full bg-[#FEE500] text-[#3c1e1e] shadow-lg flex flex-col items-center justify-center hover:scale-110 transition-transform group relative"
+        >
+          <span className="font-black text-[10px] absolute bottom-3">Kakao</span>
+          <span className="material-symbols-outlined text-xl mb-1">forum</span>
+          <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            KakaoTalk
+          </div>
+        </a>
+
+        {/* Phone */}
+        <a
+          href="tel:+84931368921"
+          className="size-14 rounded-full bg-green-500 text-white shadow-lg flex flex-col items-center justify-center hover:scale-110 transition-transform group relative"
+        >
+          <span className="font-black text-[10px] absolute bottom-3">Call</span>
+          <span className="material-symbols-outlined text-xl mb-1">call</span>
+          <div className="absolute right-full mr-2 top-1/2 -translate-y-1/2 bg-black/80 text-white text-xs px-2 py-1 rounded whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+            Hotline
+          </div>
+        </a>
+      </div>
+
     </div>
   );
 };
