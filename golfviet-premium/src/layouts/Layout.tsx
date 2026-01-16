@@ -3,20 +3,22 @@
 // Layout Component - common layout including navigation bar and footer
 
 import React from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import { MOCK_USER } from '../constants';
-import { useLanguage } from '../contexts/LanguageContext'; // 언어 훅 / Hook ngôn ngữ / Language hook
-import { LanguageSwitcher } from '../components/LanguageSwitcher'; // 언어 전환기 / Bộ chuyển ngôn ngữ / Language switcher
+import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
+import { LanguageSwitcher } from '../components/LanguageSwitcher';
 
-// 레이아웃 Props 인터페이스 / Interface Props của Layout / Layout Props interface
 interface LayoutProps {
   children: React.ReactNode;
 }
 
-// 네비게이션 바 컴포넌트 / Component thanh điều hướng / Navigation bar component
 const Navbar: React.FC = () => {
   const location = useLocation();
-  const { t } = useLanguage(); // 번역 객체 가져오기 / Lấy đối tượng dịch / Get translation object
+  const navigate = useNavigate();
+  const { t } = useLanguage();
+  const { user, logout } = useAuth();
+  const { showToast } = useToast();
   const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
 
   // 네비게이션 메뉴 항목 / Các mục menu điều hướng / Navigation menu items
@@ -26,6 +28,13 @@ const Navbar: React.FC = () => {
     { label: t.nav.membership, path: '#' },
     { label: t.nav.support, path: '#' }
   ];
+
+  const handleLogout = async () => {
+    await logout();
+    setIsUserMenuOpen(false);
+    showToast('Đã đăng xuất thành công', 'success');
+    navigate('/');
+  };
 
   return (
     <header className="sticky top-0 z-50 w-full bg-surface-light/95 dark:bg-surface-dark/95 backdrop-blur-md border-b border-[#e5ece9] dark:border-[#2a3c32]">
@@ -53,46 +62,82 @@ const Navbar: React.FC = () => {
             ))}
           </nav>
 
-          {/* 우측 액션 영역 / Khu vực hành động bên phải / Right action area */}
           <div className="flex items-center gap-4">
-            {/* 언어 전환기 / Bộ chuyển đổi ngôn ngữ / Language switcher */}
             <LanguageSwitcher />
 
-            {/* 새 예약 버튼 / Nút đặt chỗ mới / New booking button */}
             <Link to="/courses" className="hidden sm:flex items-center justify-center rounded-full h-10 px-6 bg-primary hover:bg-primary-dark transition-colors text-text-main text-sm font-bold">
               {t.nav.newBooking}
             </Link>
 
-            {/* 사용자 프로필 / Hồ sơ người dùng / User profile */}
+            {/* Profile area */}
             <div className="relative">
               <div 
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 className="flex items-center gap-2 cursor-pointer p-1 rounded-full hover:bg-gray-100 dark:hover:bg-[#2a3c32] transition-colors"
               >
-                <img src={MOCK_USER.avatar} className="size-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm" alt="User" />
-                <span className="hidden md:block text-sm font-medium pr-2 dark:text-white">{t.auth.guest}</span>
+                <img 
+                  src={user?.avatar_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100'} 
+                  className="size-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm object-cover" 
+                  alt="User" 
+                />
+                <span className="hidden md:block text-sm font-medium pr-2 dark:text-white">
+                  {user ? (user.full_name || user.email) : t.auth.guest}
+                </span>
               </div>
 
-              {/* User Menu Popup */}
               {isUserMenuOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1a261f] rounded-2xl shadow-xl border border-gray-100 dark:border-white/10 overflow-hidden z-50">
-                  <div className="p-2 space-y-1">
-                    <Link 
-                      to="/login" 
-                      onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
-                    >
-                      <span className="material-symbols-outlined text-green-500">login</span>
-                      {t.auth.login}
-                    </Link>
-                    <Link 
-                      to="/register" 
-                      onClick={() => setIsUserMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
-                    >
-                      <span className="material-symbols-outlined text-green-500">person_add</span>
-                      {t.auth.register}
-                    </Link>
+                <div className="absolute right-0 mt-2 w-52 bg-white dark:bg-[#1a261f] rounded-2xl shadow-xl border border-gray-100 dark:border-white/10 overflow-hidden z-50 p-2">
+                  <div className="space-y-1">
+                    {user ? (
+                      <>
+                        <div className="px-4 py-3 border-b border-gray-100 dark:border-white/5 mb-1">
+                          <p className="text-xs text-gray-400">Đang đăng nhập với</p>
+                          <p className="text-sm font-bold truncate dark:text-white">{user.email}</p>
+                        </div>
+                        <Link 
+                          to="/dashboard" 
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
+                        >
+                          <span className="material-symbols-outlined text-green-500">dashboard</span>
+                          {t.nav.dashboard}
+                        </Link>
+                        <Link 
+                          to="/profile" 
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
+                        >
+                          <span className="material-symbols-outlined text-primary">person</span>
+                          {t.profile.viewProfile}
+                        </Link>
+                        <button 
+                          onClick={handleLogout}
+                          className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors font-medium"
+                        >
+                          <span className="material-symbols-outlined">logout</span>
+                          Đăng xuất
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link 
+                          to="/login" 
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
+                        >
+                          <span className="material-symbols-outlined text-green-500">login</span>
+                          {t.auth.login}
+                        </Link>
+                        <Link 
+                          to="/register" 
+                          onClick={() => setIsUserMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
+                        >
+                          <span className="material-symbols-outlined text-green-500">person_add</span>
+                          {t.auth.register}
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </div>
               )}

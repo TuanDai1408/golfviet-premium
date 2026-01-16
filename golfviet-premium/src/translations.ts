@@ -202,6 +202,18 @@ export interface Translations {
         owner: string;
         agreeTerms: string;
     };
+
+    // 프로필 / Hồ sơ / Profile
+    profile: {
+        title: string;
+        personalInfo: string;
+        viewProfile: string;
+        editProfile: string;
+        recentActivity: string;
+        language: string;
+        notifications: string;
+        security: string;
+    };
 }
 
 // 한국어 번역 / Bản dịch tiếng Hàn / Korean translations
@@ -378,6 +390,16 @@ export const ko: Translations = {
         player: '골퍼',
         owner: '골프장 소유주',
         agreeTerms: '가입을 클릭하면 서비스 약관 및 개인정보 보호정책에 동의하게 됩니다.',
+    },
+    profile: {
+        title: '내 프로필',
+        personalInfo: '개인 정보',
+        viewProfile: '프로필 보기',
+        editProfile: '프로필 수정',
+        recentActivity: '최근 활동',
+        language: '언어',
+        notifications: '알림',
+        security: '보안',
     },
 };
 
@@ -556,6 +578,16 @@ export const vi: Translations = {
         owner: 'Chủ sân',
         agreeTerms: 'Bằng cách đăng ký, bạn đồng ý với Điều khoản và Chính sách của chúng tôi.',
     },
+    profile: {
+        title: 'Hồ sơ của tôi',
+        personalInfo: 'Thông tin cá nhân',
+        viewProfile: 'Xem hồ sơ',
+        editProfile: 'Chỉnh sửa hồ sơ',
+        recentActivity: 'Hoạt động gần đây',
+        language: 'Ngôn ngữ',
+        notifications: 'Thông báo',
+        security: 'Bảo mật',
+    },
 };
 
 // 영어 번역 / Bản dịch tiếng Anh / English translations
@@ -732,6 +764,16 @@ export const en: Translations = {
         player: 'Player',
         owner: 'Course Owner',
         agreeTerms: 'By signing up, you agree to our Terms and Privacy Policy.',
+    },
+    profile: {
+        title: 'My Profile',
+        personalInfo: 'Personal Information',
+        viewProfile: 'View Profile',
+        editProfile: 'Edit Profile',
+        recentActivity: 'Recent Activity',
+        language: 'Language',
+        notifications: 'Notifications',
+        security: 'Security',
     },
 };
 

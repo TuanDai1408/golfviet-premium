@@ -37,8 +37,12 @@ export interface Booking {
 
 // 사용자 인터페이스 / Interface người dùng / User interface
 export interface User {
-  name: string; // 사용자 이름 / Tên người dùng / User name
-  tier: string; // 멤버십 등급 / Cấp độ thành viên / Membership tier
-  points: number; // 포인트 / Điểm / Points
-  avatar: string; // 프로필 이미지 URL / URL hình đại diện / Avatar image URL
+  id: string;
+  email: string;
+  full_name?: string;
+  avatar_url?: string;
+  name: string; // Keep for compatibility with existing code if any
+  tier: string;
+  points: number;
+  avatar: string; // Keep for compatibility
 }
