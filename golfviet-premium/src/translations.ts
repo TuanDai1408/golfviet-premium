@@ -177,6 +177,31 @@ export interface Translations {
         urban: string;
         links: string;
     };
+
+    // 인증 / Xác thực / Auth
+    auth: {
+        login: string;
+        register: string;
+        guest: string;
+        logout: string;
+        welcomeBack: string;
+        pleaseLogin: string;
+        emailOrPhone: string;
+        password: string;
+        forgotPassword: string;
+        orContinueWith: string;
+        noAccount: string;
+        registerNow: string;
+        haveAccount: string;
+        loginNow: string;
+        createAccount: string;
+        joinCommunity: string;
+        fullName: string;
+        iam: string;
+        player: string;
+        owner: string;
+        agreeTerms: string;
+    };
 }
 
 // 한국어 번역 / Bản dịch tiếng Hàn / Korean translations
@@ -330,6 +355,29 @@ export const ko: Translations = {
         dunes: '듄스',
         urban: '도심',
         links: '링크스',
+    },
+    auth: {
+        login: '로그인',
+        register: '회원가입',
+        guest: '로그인 / 회원가입',
+        logout: '로그아웃',
+        welcomeBack: '환영합니다',
+        pleaseLogin: '계속하려면 로그인하세요',
+        emailOrPhone: '이메일 또는 전화번호',
+        password: '비밀번호',
+        forgotPassword: '비밀번호를 잊으셨나요?',
+        orContinueWith: '또는 다음으로 계속',
+        noAccount: '계정이 없으신가요?',
+        registerNow: '지금 가입하기',
+        haveAccount: '이미 계정이 있으신가요?',
+        loginNow: '지금 로그인하기',
+        createAccount: '계정 생성',
+        joinCommunity: 'GolfViet 커뮤니티에 참여하세요',
+        fullName: '성함',
+        iam: '나는',
+        player: '골퍼',
+        owner: '골프장 소유주',
+        agreeTerms: '가입을 클릭하면 서비스 약관 및 개인정보 보호정책에 동의하게 됩니다.',
     },
 };
 
@@ -485,6 +533,29 @@ export const vi: Translations = {
         urban: 'Đô thị',
         links: 'Ven biển',
     },
+    auth: {
+        login: 'Đăng nhập',
+        register: 'Đăng ký',
+        guest: 'Đăng nhập / Đăng kí',
+        logout: 'Đăng xuất',
+        welcomeBack: 'Chào mừng trở lại',
+        pleaseLogin: 'Đăng nhập để tiếp tục',
+        emailOrPhone: 'Email hoặc Số điện thoại',
+        password: 'Mật khẩu',
+        forgotPassword: 'Quên mật khẩu?',
+        orContinueWith: 'Hoặc tiếp tục với',
+        noAccount: 'Chưa có tài khoản?',
+        registerNow: 'Đăng ký ngay',
+        haveAccount: 'Đã có tài khoản?',
+        loginNow: 'Đăng nhập ngay',
+        createAccount: 'Tạo tài khoản',
+        joinCommunity: 'Tham gia cộng đồng GolfViet',
+        fullName: 'Họ và tên',
+        iam: 'Tôi là',
+        player: 'Người chơi',
+        owner: 'Chủ sân',
+        agreeTerms: 'Bằng cách đăng ký, bạn đồng ý với Điều khoản và Chính sách của chúng tôi.',
+    },
 };
 
 // 영어 번역 / Bản dịch tiếng Anh / English translations
@@ -638,6 +709,29 @@ export const en: Translations = {
         dunes: 'Dunes',
         urban: 'Urban',
         links: 'Links',
+    },
+    auth: {
+        login: 'Login',
+        register: 'Register',
+        guest: 'Login / Register',
+        logout: 'Logout',
+        welcomeBack: 'Welcome Back',
+        pleaseLogin: 'Login to continue',
+        emailOrPhone: 'Email or Phone',
+        password: 'Password',
+        forgotPassword: 'Forgot password?',
+        orContinueWith: 'Or continue with',
+        noAccount: "Don't have an account?",
+        registerNow: 'Register now',
+        haveAccount: 'Already have an account?',
+        loginNow: 'Login now',
+        createAccount: 'Create Account',
+        joinCommunity: 'Join the GolfViet community',
+        fullName: 'Full Name',
+        iam: 'I am a',
+        player: 'Player',
+        owner: 'Course Owner',
+        agreeTerms: 'By signing up, you agree to our Terms and Privacy Policy.',
     },
 };
 

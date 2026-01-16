@@ -17,6 +17,7 @@ interface LayoutProps {
 const Navbar: React.FC = () => {
   const location = useLocation();
   const { t } = useLanguage(); // 번역 객체 가져오기 / Lấy đối tượng dịch / Get translation object
+  const [isUserMenuOpen, setIsUserMenuOpen] = React.useState(false);
 
   // 네비게이션 메뉴 항목 / Các mục menu điều hướng / Navigation menu items
   const navItems = [
@@ -63,13 +64,50 @@ const Navbar: React.FC = () => {
             </Link>
 
             {/* 사용자 프로필 / Hồ sơ người dùng / User profile */}
-            <div className="flex items-center gap-2 cursor-pointer p-1 rounded-full hover:bg-gray-100 dark:hover:bg-[#2a3c32] transition-colors">
-              <img src={MOCK_USER.avatar} className="size-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm" alt="User" />
-              <span className="hidden md:block text-sm font-medium pr-2 dark:text-white">{MOCK_USER.name}</span>
+            <div className="relative">
+              <div 
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-2 cursor-pointer p-1 rounded-full hover:bg-gray-100 dark:hover:bg-[#2a3c32] transition-colors"
+              >
+                <img src={MOCK_USER.avatar} className="size-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm" alt="User" />
+                <span className="hidden md:block text-sm font-medium pr-2 dark:text-white">{t.auth.guest}</span>
+              </div>
+
+              {/* User Menu Popup */}
+              {isUserMenuOpen && (
+                <div className="absolute right-0 mt-2 w-48 bg-white dark:bg-[#1a261f] rounded-2xl shadow-xl border border-gray-100 dark:border-white/10 overflow-hidden z-50">
+                  <div className="p-2 space-y-1">
+                    <Link 
+                      to="/login" 
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
+                    >
+                      <span className="material-symbols-outlined text-green-500">login</span>
+                      {t.auth.login}
+                    </Link>
+                    <Link 
+                      to="/register" 
+                      onClick={() => setIsUserMenuOpen(false)}
+                      className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
+                    >
+                      <span className="material-symbols-outlined text-green-500">person_add</span>
+                      {t.auth.register}
+                    </Link>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
         </div>
       </div>
+
+      {/* Close menu when clicking outside (Simple implementation) */}
+      {isUserMenuOpen && (
+        <div 
+          className="fixed inset-0 z-40" 
+          onClick={() => setIsUserMenuOpen(false)}
+        />
+      )}
     </header>
   );
 };

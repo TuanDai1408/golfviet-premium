@@ -13,6 +13,9 @@ import { CourseDetail } from './pages/CourseDetail';
 import { Checkout } from './pages/Checkout';
 import { Confirmation } from './pages/Confirmation';
 import { ZaloContact } from './pages/ZaloContact';
+import Login from './pages/Login';
+import Register from './pages/Register';
+import AuthCallback from './pages/AuthCallback';
 
 // 앱 컴포넌트 정의 / Định nghĩa component App / App component definition
 const App: React.FC = () => {
@@ -32,6 +35,9 @@ const App: React.FC = () => {
             <Route path="/checkout" element={<Checkout />} /> {/* 체크아웃 / Thanh toán / Checkout */}
             <Route path="/confirmation" element={<Confirmation />} /> {/* 확인 페이지 / Trang xác nhận / Confirmation */}
             <Route path="/zalo-contact" element={<ZaloContact />} /> {/* Zalo Contact Page */}
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="*" element={<Navigate to="/" replace />} /> {/* 잘못된 경로는 홈으로 리디렉션 / Chuyển hướng về trang chủ nếu đường dẫn sai / Redirect to home for invalid paths */}
           </Routes>
         </Layout>
