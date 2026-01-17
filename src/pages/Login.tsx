@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Phone, Chrome, Facebook, LogIn, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useGoogleLogin } from '@react-oauth/google';
 import { apiService } from '../services/api';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useAuth } from '../contexts/AuthContext';
 
 const Login: React.FC = () => {
   const { t } = useLanguage();
@@ -13,10 +15,36 @@ const Login: React.FC = () => {
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { login } = useAuth();
+
+  const googleLogin = useGoogleLogin({
+    flow: 'auth-code',
+    onSuccess: async (codeResponse) => {
+      setSocialLoading('google');
+      try {
+        const { token, user } = await apiService.googleLogin(codeResponse.code);
+        login(token, user);
+        navigate('/dashboard');
+      } catch (err: any) {
+        setError(err.message || 'Google Login Failed');
+      } finally {
+        setSocialLoading(null);
+      }
+    },
+    onError: () => {
+      setError('Google Login Failed');
+      setSocialLoading(null);
+    }
+  });
 
   const handleSocialLogin = async (provider: 'google' | 'facebook' | 'zalo') => {
     setSocialLoading(provider);
     setError('');
+
+    if (provider === 'google') {
+      return googleLogin();
+    }
+
     try {
       await apiService.signInWithSocial(provider);
     } catch (err: any) {
@@ -45,7 +73,7 @@ const Login: React.FC = () => {
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-green-500/20 rounded-full blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/20 rounded-full blur-[120px]" />
 
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
@@ -64,7 +92,7 @@ const Login: React.FC = () => {
         </div>
 
         {error && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, x: -10 }}
             animate={{ opacity: 1, x: 0 }}
             className="bg-red-500/10 border border-red-500/50 text-red-400 p-3 rounded-xl mb-6 text-sm text-center"
@@ -78,8 +106,8 @@ const Login: React.FC = () => {
             <label className="text-sm font-medium text-gray-300 ml-1">{t.auth.emailOrPhone}</label>
             <div className="relative group">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-green-400 transition-colors w-5 h-5" />
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
@@ -93,8 +121,8 @@ const Login: React.FC = () => {
             <label className="text-sm font-medium text-gray-300 ml-1">{t.auth.password}</label>
             <div className="relative group">
               <Lock className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-green-400 transition-colors w-5 h-5" />
-              <input 
-                type="password" 
+              <input
+                type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
@@ -108,7 +136,7 @@ const Login: React.FC = () => {
             <a href="#" className="text-sm text-green-400 hover:text-green-300 transition-colors">{t.auth.forgotPassword}</a>
           </div>
 
-          <motion.button 
+          <motion.button
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
             disabled={loading}
@@ -133,7 +161,7 @@ const Login: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-2 gap-4">
-          <motion.button 
+          <motion.button
             whileHover={{ y: -2 }}
             onClick={() => handleSocialLogin('google')}
             disabled={!!socialLoading}
@@ -142,7 +170,7 @@ const Login: React.FC = () => {
             <Chrome className="w-5 h-5 text-red-500" />
             <span className="text-white text-sm">{socialLoading === 'google' ? '...' : 'Google'}</span>
           </motion.button>
-          <motion.button 
+          <motion.button
             whileHover={{ y: -2 }}
             onClick={() => handleSocialLogin('facebook')}
             disabled={!!socialLoading}
@@ -152,9 +180,9 @@ const Login: React.FC = () => {
             <span className="text-white text-sm">{socialLoading === 'facebook' ? '...' : 'Facebook'}</span>
           </motion.button>
         </div>
-        
+
         <div className="mt-4">
-          <motion.button 
+          <motion.button
             whileHover={{ y: -2 }}
             onClick={() => handleSocialLogin('zalo')}
             disabled={!!socialLoading}
