@@ -71,14 +71,14 @@ const Navbar: React.FC = () => {
 
             {/* Profile area */}
             <div className="relative">
-              <div 
+              <div
                 onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
                 className="flex items-center gap-2 cursor-pointer p-1 rounded-full hover:bg-gray-100 dark:hover:bg-[#2a3c32] transition-colors"
               >
-                <img 
-                  src={user?.avatar_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=100'} 
-                  className="size-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm object-cover" 
-                  alt="User" 
+                <img
+                  src={user?.avatar_url || 'https://ui-avatars.com/api/?background=ffffff&color=999&name=?&size=128'}
+                  className="size-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm object-cover"
+                  alt="User"
                 />
                 <span className="hidden md:block text-sm font-medium pr-2 dark:text-white">
                   {user ? (user.full_name || user.email) : t.auth.guest}
@@ -94,23 +94,23 @@ const Navbar: React.FC = () => {
                           <p className="text-xs text-gray-400">Đang đăng nhập với</p>
                           <p className="text-sm font-bold truncate dark:text-white">{user.email}</p>
                         </div>
-                        <Link 
-                          to="/dashboard" 
+                        <Link
+                          to="/dashboard"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
                         >
                           <span className="material-symbols-outlined text-green-500">dashboard</span>
                           {t.nav.dashboard}
                         </Link>
-                        <Link 
-                          to="/profile" 
+                        <Link
+                          to="/profile"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
                         >
                           <span className="material-symbols-outlined text-primary">person</span>
                           {t.profile.viewProfile}
                         </Link>
-                        <button 
+                        <button
                           onClick={handleLogout}
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors font-medium"
                         >
@@ -120,16 +120,16 @@ const Navbar: React.FC = () => {
                       </>
                     ) : (
                       <>
-                        <Link 
-                          to="/login" 
+                        <Link
+                          to="/login"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
                         >
                           <span className="material-symbols-outlined text-green-500">login</span>
                           {t.auth.login}
                         </Link>
-                        <Link 
-                          to="/register" 
+                        <Link
+                          to="/register"
                           onClick={() => setIsUserMenuOpen(false)}
                           className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 dark:text-gray-200 hover:bg-green-50 dark:hover:bg-green-500/10 rounded-xl transition-colors font-medium"
                         >
@@ -148,8 +148,8 @@ const Navbar: React.FC = () => {
 
       {/* Close menu when clicking outside (Simple implementation) */}
       {isUserMenuOpen && (
-        <div 
-          className="fixed inset-0 z-40" 
+        <div
+          className="fixed inset-0 z-40"
           onClick={() => setIsUserMenuOpen(false)}
         />
       )}

@@ -19,20 +19,20 @@ export const Profile: React.FC = () => {
   return (
     <div className="min-h-screen pt-24 pb-12 bg-[#f8fafc] dark:bg-[#0d1117]">
       <div className="max-w-4xl mx-auto px-4">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           className="bg-white dark:bg-[#161b22] rounded-3xl shadow-xl overflow-hidden border border-gray-100 dark:border-white/5"
         >
           {/* Header/Cover */}
           <div className="h-32 bg-gradient-to-r from-primary/20 to-primary-dark/20 dark:from-primary/10 dark:to-primary-dark/10" />
-          
+
           <div className="px-8 pb-8 relative">
             {/* Avatar */}
             <div className="absolute -top-12 left-8">
               <div className="relative">
-                <img 
-                  src={user.avatar_url || 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=150'} 
+                <img
+                  src={user.avatar_url || 'https://ui-avatars.com/api/?background=ffffff&color=999&name=?&size=128'}
                   alt={user.full_name || user.email}
                   className="size-24 rounded-2xl object-cover border-4 border-white dark:border-[#161b22] shadow-lg"
                 />

@@ -62,6 +62,15 @@ class ApiService {
     return data;
   }
 
+  async googleLogin(code: string) {
+    const data = await this.request('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ code }),
+    });
+    if (data.token) localStorage.setItem('auth_token', data.token);
+    return data;
+  }
+
   async handleSocialAuth(session: any) {
     // Sync with backend to get our own JWT token
     const data = await this.request('/auth/social-login', {
