@@ -4,6 +4,7 @@ import { supabase } from '../lib/supabase';
 import { apiService } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { Loader2 } from 'lucide-react';
 
@@ -11,6 +12,7 @@ const AuthCallback: React.FC = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const { showToast } = useToast();
+  const { t } = useLanguage();
 
   useEffect(() => {
     const handleAuth = async () => {
@@ -23,14 +25,14 @@ const AuthCallback: React.FC = () => {
         if (session) {
           const data = await apiService.handleSocialAuth(session);
           login(data.token, data.user);
-          showToast('Đăng nhập thành công!', 'success');
+          showToast(`${t.auth.welcomeBack || 'Chào mừng trở lại'}, ${data.user.full_name || data.user.email || data.user.phone}!`, 'success');
           navigate('/');
         } else {
           navigate('/login');
         }
       } catch (err) {
         console.error('Auth callback error:', err);
-        showToast('Đăng nhập thất bại. Vui lòng thử lại.', 'error');
+        showToast(t.toasts.loginFailed, 'error');
         navigate('/login');
       }
     };
@@ -46,8 +48,8 @@ const AuthCallback: React.FC = () => {
       >
         <Loader2 size={48} className="text-green-500" />
       </motion.div>
-      <h2 className="text-xl font-medium">Đang xác thực...</h2>
-      <p className="text-gray-400 mt-2">Vui lòng chờ trong giây lát</p>
+      <h2 className="text-xl font-medium">{t.auth.authenticating}</h2>
+      <p className="text-gray-400 mt-2">{t.auth.pleaseWait}</p>
     </div>
   );
 };

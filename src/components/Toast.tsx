@@ -29,27 +29,29 @@ export const Toast: React.FC<ToastProps> = ({ message, type, isVisible, onClose,
   };
 
   const colors = {
-    success: 'border-green-500/20 bg-green-500/10',
-    error: 'border-red-500/20 bg-red-500/10',
-    info: 'border-blue-500/20 bg-blue-500/10',
+    success: 'border-emerald-500/20 bg-[#06140e]/90 text-emerald-400',
+    error: 'border-red-500/20 bg-[#160b0b]/90 text-red-400',
+    info: 'border-blue-500/20 bg-[#0b1016]/90 text-blue-400',
   };
 
   return (
     <AnimatePresence>
       {isVisible && (
         <motion.div
-          initial={{ opacity: 0, y: -20, scale: 0.9 }}
+          initial={{ opacity: 0, y: -40, scale: 0.95 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9, transition: { duration: 0.2 } }}
-          className={`fixed top-6 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-3 px-4 py-3 rounded-2xl border backdrop-blur-md shadow-2xl min-w-[320px] ${colors[type]}`}
+          exit={{ opacity: 0, y: -20, scale: 0.95, transition: { duration: 0.2 } }}
+          className={`fixed top-8 left-1/2 -translate-x-1/2 z-[9999] flex items-center gap-4 px-6 py-4 rounded-2xl border backdrop-blur-xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] min-w-[360px] ${colors[type]}`}
         >
-          {icons[type]}
-          <p className="text-sm font-medium text-white flex-1">{message}</p>
-          <button 
+          <div className="flex-shrink-0">
+            {icons[type]}
+          </div>
+          <p className="text-sm font-semibold tracking-wide flex-1">{message}</p>
+          <button
             onClick={onClose}
-            className="p-1 hover:bg-white/10 rounded-full transition-colors text-white/50 hover:text-white"
+            className="p-1.5 hover:bg-white/10 rounded-xl transition-all text-white/30 hover:text-white"
           >
-            <X size={16} />
+            <X size={18} />
           </button>
         </motion.div>
       )}
