@@ -71,6 +71,15 @@ class ApiService {
     return data;
   }
 
+  async facebookLogin(accessToken: string) {
+    const data = await this.request('/auth/facebook', {
+      method: 'POST',
+      body: JSON.stringify({ accessToken }),
+    });
+    if (data.token) localStorage.setItem('auth_token', data.token);
+    return data;
+  }
+
   async handleSocialAuth(session: any) {
     // Sync with backend to get our own JWT token
     const data = await this.request('/auth/social-login', {
@@ -86,6 +95,22 @@ class ApiService {
     if (data.token) localStorage.setItem('auth_token', data.token);
     return data;
   }
+
+  async updateProfile(userData: { full_name?: string; phone?: string }) {
+    return this.request('/auth/profile', {
+      method: 'PUT',
+      body: JSON.stringify(userData),
+    });
+  }
+
+  async changePassword(passwords: any) {
+    return this.request('/auth/change-password', {
+      method: 'POST',
+      body: JSON.stringify(passwords),
+    });
+  }
+
+
 
   logout() {
     localStorage.removeItem('auth_token');

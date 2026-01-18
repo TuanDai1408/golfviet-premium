@@ -32,7 +32,7 @@ const Navbar: React.FC = () => {
   const handleLogout = async () => {
     await logout();
     setIsUserMenuOpen(false);
-    showToast('Đã đăng xuất thành công', 'success');
+    showToast(t.auth.loggedOut, 'success');
     navigate('/');
   };
 
@@ -76,7 +76,7 @@ const Navbar: React.FC = () => {
                 className="flex items-center gap-2 cursor-pointer p-1 rounded-full hover:bg-gray-100 dark:hover:bg-[#2a3c32] transition-colors"
               >
                 <img
-                  src={user?.avatar_url || 'https://ui-avatars.com/api/?background=ffffff&color=999&name=?&size=128'}
+                  src={user?.avatar_url || (user ? `https://ui-avatars.com/api/?name=${encodeURIComponent(user.full_name || user.phone)}&background=10b981&color=fff&size=128&bold=true` : 'https://api.dicebear.com/7.x/shapes/svg?seed=Golf&backgroundColor=10b981')}
                   className="size-10 rounded-full border-2 border-white dark:border-gray-700 shadow-sm object-cover"
                   alt="User"
                 />
@@ -91,8 +91,8 @@ const Navbar: React.FC = () => {
                     {user ? (
                       <>
                         <div className="px-4 py-3 border-b border-gray-100 dark:border-white/5 mb-1">
-                          <p className="text-xs text-gray-400">Đang đăng nhập với</p>
-                          <p className="text-sm font-bold truncate dark:text-white">{user.email}</p>
+                          <p className="text-xs text-gray-400">{t.auth.loggedInAs}</p>
+                          <p className="text-sm font-bold truncate dark:text-white">{user.email || user.phone}</p>
                         </div>
                         <Link
                           to="/dashboard"
@@ -115,7 +115,7 @@ const Navbar: React.FC = () => {
                           className="w-full flex items-center gap-3 px-4 py-3 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 rounded-xl transition-colors font-medium"
                         >
                           <span className="material-symbols-outlined">logout</span>
-                          Đăng xuất
+                          {t.auth.logout}
                         </button>
                       </>
                     ) : (

@@ -197,10 +197,25 @@ export interface Translations {
         createAccount: string;
         joinCommunity: string;
         fullName: string;
+        phone: string;
+        confirmPassword: string;
+        passwordMismatch: string;
         iam: string;
         player: string;
         owner: string;
         agreeTerms: string;
+        weak: string;
+        medium: string;
+        strong: string;
+        atLeast8Chars: string;
+        atLeast1Upper: string;
+        atLeast1Lower: string;
+        atLeast1Number: string;
+        passwordStrongCheck: string;
+        loggedOut: string;
+        loggedInAs: string;
+        authenticating: string;
+        pleaseWait: string;
     };
 
     // 프로필 / Hồ sơ / Profile
@@ -213,6 +228,31 @@ export interface Translations {
         language: string;
         notifications: string;
         security: string;
+        accountSettings: string;
+        changePassword: string;
+        currentPassword: string;
+        newPassword: string;
+        confirmNewPassword: string;
+        selectLanguage: string;
+        cancel: string;
+        saveChanges: string;
+        update: string;
+        loginToViewProfile: string;
+        phoneNumber: string;
+    };
+    toasts: {
+        success: string;
+        error: string;
+        info: string;
+        welcome: string;
+        profileUpdated: string;
+        passwordChanged: string;
+        passwordMismatch: string;
+        passwordTooShort: string;
+        invalidPhone: string;
+        nameRequired: string;
+        languageChanged: string;
+        loginFailed: string;
     };
 }
 
@@ -375,7 +415,7 @@ export const ko: Translations = {
         logout: '로그아웃',
         welcomeBack: '환영합니다',
         pleaseLogin: '계속하려면 로그인하세요',
-        emailOrPhone: '이메일 또는 전화번호',
+        emailOrPhone: '전화번호',
         password: '비밀번호',
         forgotPassword: '비밀번호를 잊으셨나요?',
         orContinueWith: '또는 다음으로 계속',
@@ -386,10 +426,25 @@ export const ko: Translations = {
         createAccount: '계정 생성',
         joinCommunity: 'GolfViet 커뮤니티에 참여하세요',
         fullName: '성함',
+        phone: '전화번호',
+        confirmPassword: '비밀번호 확인',
+        passwordMismatch: '비밀번호가 일치하지 않습니다',
         iam: '나는',
         player: '골퍼',
         owner: '골프장 소유주',
         agreeTerms: '가입을 클릭하면 서비스 약관 및 개인정보 보호정책에 동의하게 됩니다.',
+        weak: '약함',
+        medium: '보통',
+        strong: '강함',
+        atLeast8Chars: '최소 8자',
+        atLeast1Upper: '최소 1개의 대문자',
+        atLeast1Lower: '최소 1개의 소문자',
+        atLeast1Number: '최소 1개의 숫자',
+        passwordStrongCheck: '비밀번호가 충분히 강하지 않습니다. 아래 요구 사항을 확인하십시오.',
+        loggedOut: '성공적으로 로그아웃되었습니다. 다음에 또 만나요!',
+        loggedInAs: '로그인 계정:',
+        authenticating: '인증 중...',
+        pleaseWait: '잠시만 기다려 주세요',
     },
     profile: {
         title: '내 프로필',
@@ -400,6 +455,31 @@ export const ko: Translations = {
         language: '언어',
         notifications: '알림',
         security: '보안',
+        accountSettings: '계정 설정',
+        changePassword: '비밀번호 변경',
+        currentPassword: '현재 비밀번호',
+        newPassword: '새 비밀번호',
+        confirmNewPassword: '새 비밀번호 확인',
+        selectLanguage: '언어 선택',
+        cancel: '취소',
+        saveChanges: '변경사항 저장',
+        update: '업데이트',
+        loginToViewProfile: '프로필을 보려면 로그인하세요.',
+        phoneNumber: '전화번호',
+    },
+    toasts: {
+        success: '성공',
+        error: '오류',
+        info: '정보',
+        welcome: '환영합니다!',
+        profileUpdated: '프로필이 성공적으로 업데이트되었습니다',
+        passwordChanged: '비밀번호가 성공적으로 변경되었습니다',
+        passwordMismatch: '비밀번호가 일치하지 않습니다',
+        passwordTooShort: '비밀번호는 8자 이상이어야 합니다',
+        invalidPhone: '유효하지 않은 전화번호 형식입니다',
+        nameRequired: '성함을 입력해주세요',
+        languageChanged: '언어가 변경되었습니다',
+        loginFailed: '로그인에 실패했습니다. 정보를 다시 확인해주세요',
     },
 };
 
@@ -562,7 +642,7 @@ export const vi: Translations = {
         logout: 'Đăng xuất',
         welcomeBack: 'Chào mừng trở lại',
         pleaseLogin: 'Đăng nhập để tiếp tục',
-        emailOrPhone: 'Email hoặc Số điện thoại',
+        emailOrPhone: 'Số điện thoại',
         password: 'Mật khẩu',
         forgotPassword: 'Quên mật khẩu?',
         orContinueWith: 'Hoặc tiếp tục với',
@@ -573,10 +653,25 @@ export const vi: Translations = {
         createAccount: 'Tạo tài khoản',
         joinCommunity: 'Tham gia cộng đồng GolfViet',
         fullName: 'Họ và tên',
+        phone: 'Số điện thoại',
+        confirmPassword: 'Nhập lại mật khẩu',
+        passwordMismatch: 'Mật khẩu không khớp',
         iam: 'Tôi là',
         player: 'Người chơi',
         owner: 'Chủ sân',
         agreeTerms: 'Bằng cách đăng ký, bạn đồng ý với Điều khoản và Chính sách của chúng tôi.',
+        weak: 'Yếu',
+        medium: 'Trung bình',
+        strong: 'Mạnh',
+        atLeast8Chars: 'Ít nhất 8 ký tự',
+        atLeast1Upper: 'Ít nhất 1 chữ hoa',
+        atLeast1Lower: 'Ít nhất 1 chữ thường',
+        atLeast1Number: 'Ít nhất 1 số',
+        passwordStrongCheck: 'Mật khẩu chưa đủ mạnh. Vui lòng kiểm tra các yêu cầu bên dưới.',
+        loggedOut: 'Bạn đã đăng xuất khỏi hệ thống thành công. Hẹn gặp lại!',
+        loggedInAs: 'Đang đăng nhập với',
+        authenticating: 'Đang xác thực...',
+        pleaseWait: 'Vui lòng chờ trong giây lát',
     },
     profile: {
         title: 'Hồ sơ của tôi',
@@ -587,6 +682,31 @@ export const vi: Translations = {
         language: 'Ngôn ngữ',
         notifications: 'Thông báo',
         security: 'Bảo mật',
+        accountSettings: 'Cài đặt tài khoản',
+        changePassword: 'Đổi mật khẩu',
+        currentPassword: 'Mật khẩu hiện tại',
+        newPassword: 'Mật khẩu mới',
+        confirmNewPassword: 'Xác nhận mật khẩu mới',
+        selectLanguage: 'Chọn ngôn ngữ',
+        cancel: 'Hủy',
+        saveChanges: 'Lưu thay đổi',
+        update: 'Cập nhật',
+        loginToViewProfile: 'Vui lòng đăng nhập để xem hồ sơ.',
+        phoneNumber: 'Số điện thoại',
+    },
+    toasts: {
+        success: 'Thành công',
+        error: 'Lỗi',
+        info: 'Thông tin',
+        welcome: 'Chào mừng trở lại!',
+        profileUpdated: 'Cập nhật hồ sơ thành công',
+        passwordChanged: 'Đổi mật khẩu thành công',
+        passwordMismatch: 'Mật khẩu xác nhận không khớp',
+        passwordTooShort: 'Mật khẩu phải có ít nhất 8 ký tự',
+        invalidPhone: 'Số điện thoại không hợp lệ',
+        nameRequired: 'Vui lòng nhập họ và tên',
+        languageChanged: 'Đã đổi ngôn ngữ thành công',
+        loginFailed: 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin',
     },
 };
 
@@ -749,7 +869,7 @@ export const en: Translations = {
         logout: 'Logout',
         welcomeBack: 'Welcome Back',
         pleaseLogin: 'Login to continue',
-        emailOrPhone: 'Email or Phone',
+        emailOrPhone: 'Phone Number',
         password: 'Password',
         forgotPassword: 'Forgot password?',
         orContinueWith: 'Or continue with',
@@ -760,10 +880,25 @@ export const en: Translations = {
         createAccount: 'Create Account',
         joinCommunity: 'Join the GolfViet community',
         fullName: 'Full Name',
+        phone: 'Phone Number',
+        confirmPassword: 'Confirm Password',
+        passwordMismatch: 'Passwords do not match',
         iam: 'I am a',
         player: 'Player',
         owner: 'Course Owner',
         agreeTerms: 'By signing up, you agree to our Terms and Privacy Policy.',
+        weak: 'Weak',
+        medium: 'Medium',
+        strong: 'Strong',
+        atLeast8Chars: 'At least 8 characters',
+        atLeast1Upper: 'At least 1 uppercase',
+        atLeast1Lower: 'At least 1 lowercase',
+        atLeast1Number: 'At least 1 number',
+        passwordStrongCheck: 'Password is not strong enough. Please check the requirements below.',
+        loggedOut: 'Successfully logged out. See you again!',
+        loggedInAs: 'Logged in as',
+        authenticating: 'Authenticating...',
+        pleaseWait: 'Please wait a moment',
     },
     profile: {
         title: 'My Profile',
@@ -774,6 +909,31 @@ export const en: Translations = {
         language: 'Language',
         notifications: 'Notifications',
         security: 'Security',
+        accountSettings: 'Account Settings',
+        changePassword: 'Change Password',
+        currentPassword: 'Current Password',
+        newPassword: 'New Password',
+        confirmNewPassword: 'Confirm New Password',
+        selectLanguage: 'Select Language',
+        cancel: 'Cancel',
+        saveChanges: 'Save Changes',
+        update: 'Update',
+        loginToViewProfile: 'Please login to view profile.',
+        phoneNumber: 'Phone Number',
+    },
+    toasts: {
+        success: 'Success',
+        error: 'Error',
+        info: 'Info',
+        welcome: 'Welcome back!',
+        profileUpdated: 'Profile updated successfully',
+        passwordChanged: 'Password changed successfully',
+        passwordMismatch: 'Passwords do not match',
+        passwordTooShort: 'Password must be at least 8 characters',
+        invalidPhone: 'Invalid phone number format',
+        nameRequired: 'Please enter your full name',
+        languageChanged: 'Language changed successfully',
+        loginFailed: 'Login failed. Please check your credentials',
     },
 };
 

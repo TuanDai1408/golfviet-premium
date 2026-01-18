@@ -1,21 +1,30 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Lock, Phone, Chrome, Facebook, LogIn, ChevronRight } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useGoogleLogin } from '@react-oauth/google';
+import FacebookLogin from '@greatsumini/react-facebook-login';
 import { apiService } from '../services/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
+import { useToast } from '../contexts/ToastContext';
 
 const Login: React.FC = () => {
   const { t } = useLanguage();
+  const { user, loading: authLoading, login } = useAuth();
+  const { showToast } = useToast();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [socialLoading, setSocialLoading] = useState<string | null>(null);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [user, authLoading, navigate]);
 
   const googleLogin = useGoogleLogin({
     flow: 'auth-code',
@@ -37,18 +46,33 @@ const Login: React.FC = () => {
     }
   });
 
-  const handleSocialLogin = async (provider: 'google' | 'facebook' | 'zalo') => {
-    setSocialLoading(provider);
-    setError('');
-
+  const handleSocialLogin = async (provider: 'google' | 'facebook') => {
     if (provider === 'google') {
       return googleLogin();
     }
 
+    setSocialLoading(provider);
+    setError('');
+
     try {
-      await apiService.signInWithSocial(provider);
+      if (provider !== 'facebook') {
+        await apiService.signInWithSocial(provider);
+      }
     } catch (err: any) {
       setError(err.message || `Failed to login with ${provider}`);
+      setSocialLoading(null);
+    }
+  };
+
+  const handleFacebookSuccess = async (response: any) => {
+    setSocialLoading('facebook');
+    try {
+      const { token, user } = await apiService.facebookLogin(response.accessToken);
+      login(token, user);
+      navigate('/dashboard');
+    } catch (err: any) {
+      setError(err.message || 'Facebook Login Failed');
+    } finally {
       setSocialLoading(null);
     }
   };
@@ -57,8 +81,27 @@ const Login: React.FC = () => {
     e.preventDefault();
     setLoading(true);
     setError('');
+
+    // Basic client side validation for phone format if it looks like a phone number
+    if (/^\d/.test(email)) {
+      const phoneRegex = /^0\d{9,10}$/;
+      if (!phoneRegex.test(email)) {
+        setError(t.toasts.invalidPhone);
+        setLoading(false);
+        return;
+      }
+    }
+
     try {
-      await apiService.login({ email, password });
+      const response = await apiService.login({ email, password });
+
+      // Call AuthContext login to update user state
+      if (response.token && response.user) {
+        login(response.token, response.user);
+        const welcomeMsg = `${t.auth.welcomeBack}, ${response.user.full_name || response.user.email || response.user.phone}!`;
+        showToast(welcomeMsg, 'success');
+      }
+
       navigate('/dashboard');
     } catch (err: any) {
       setError(err.message || t.common.error);
@@ -68,7 +111,7 @@ const Login: React.FC = () => {
   };
 
   return (
-    <div className="min-h-[calc(100-h-16)] flex items-center justify-center bg-[#0d1117] relative overflow-hidden font-sans py-12 px-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#0d1117] relative overflow-hidden font-sans py-12 px-4">
       {/* Background Decorative Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-green-500/20 rounded-full blur-[120px]" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-emerald-500/20 rounded-full blur-[120px]" />
@@ -105,12 +148,15 @@ const Login: React.FC = () => {
           <div className="space-y-1">
             <label className="text-sm font-medium text-gray-300 ml-1">{t.auth.emailOrPhone}</label>
             <div className="relative group">
-              <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-green-400 transition-colors w-5 h-5" />
+              <Phone className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-green-400 transition-colors w-5 h-5" />
               <input
                 type="text"
                 value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
+                onChange={(e) => {
+                  setEmail(e.target.value);
+                  if (error) setError('');
+                }}
+                placeholder="0912345678"
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-green-500/50 focus:bg-white/10 transition-all"
                 required
               />
@@ -124,7 +170,10 @@ const Login: React.FC = () => {
               <input
                 type="password"
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                  if (error) setError('');
+                }}
                 placeholder="••••••••"
                 className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-green-500/50 focus:bg-white/10 transition-all"
                 required
@@ -170,28 +219,28 @@ const Login: React.FC = () => {
             <Chrome className="w-5 h-5 text-red-500" />
             <span className="text-white text-sm">{socialLoading === 'google' ? '...' : 'Google'}</span>
           </motion.button>
-          <motion.button
-            whileHover={{ y: -2 }}
-            onClick={() => handleSocialLogin('facebook')}
-            disabled={!!socialLoading}
-            className={`flex items-center justify-center gap-2 bg-white/5 border border-white/10 py-2.5 rounded-xl hover:bg-white/10 transition-all ${socialLoading === 'facebook' ? 'opacity-50' : ''}`}
-          >
-            <Facebook className="w-5 h-5 text-blue-500" />
-            <span className="text-white text-sm">{socialLoading === 'facebook' ? '...' : 'Facebook'}</span>
-          </motion.button>
+          <FacebookLogin
+            appId={import.meta.env.VITE_FACEBOOK_APP_ID || ''}
+            onSuccess={handleFacebookSuccess}
+            onFail={(error) => {
+              console.error('FB Login Error:', error);
+              setError('Facebook Login Failed');
+              setSocialLoading(null);
+            }}
+            render={({ onClick }) => (
+              <motion.button
+                whileHover={{ y: -2 }}
+                onClick={onClick}
+                disabled={!!socialLoading}
+                className={`flex items-center justify-center gap-2 bg-white/5 border border-white/10 py-2.5 rounded-xl hover:bg-white/10 transition-all ${socialLoading === 'facebook' ? 'opacity-50' : ''}`}
+              >
+                <Facebook className="w-5 h-5 text-blue-500" />
+                <span className="text-white text-sm">{socialLoading === 'facebook' ? '...' : 'Facebook'}</span>
+              </motion.button>
+            )}
+          />
         </div>
 
-        <div className="mt-4">
-          <motion.button
-            whileHover={{ y: -2 }}
-            onClick={() => handleSocialLogin('zalo')}
-            disabled={!!socialLoading}
-            className={`w-full flex items-center justify-center gap-2 bg-white/5 border border-white/10 py-2.5 rounded-xl hover:bg-white/10 transition-all ${socialLoading === 'zalo' ? 'opacity-50' : ''}`}
-          >
-            <div className="w-5 h-5 overflow-hidden rounded-full flex items-center justify-center bg-blue-600 font-bold text-[10px] text-white">Z</div>
-            <span className="text-white text-sm">{socialLoading === 'zalo' ? '...' : 'Zalo'}</span>
-          </motion.button>
-        </div>
 
         <p className="mt-8 text-center text-gray-400 text-sm">
           {t.auth.noAccount}{' '}
