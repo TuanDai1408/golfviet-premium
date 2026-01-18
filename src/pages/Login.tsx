@@ -65,12 +65,22 @@ const Login: React.FC = () => {
   };
 
   const handleFacebookSuccess = async (response: any) => {
+    console.log('Facebook Login Success Response:', response);
+    const accessToken = response.accessToken;
+    if (!accessToken) {
+      console.error('Facebook accessToken is missing in response');
+      setError('Facebook Login Failed: No access token');
+      return;
+    }
+    console.log('Sending Facebook accessToken to backend:', accessToken.substring(0, 10) + '...');
     setSocialLoading('facebook');
     try {
       const { token, user } = await apiService.facebookLogin(response.accessToken);
+      console.log('Backend Facebook Login Success:', user.full_name);
       login(token, user);
       navigate('/dashboard');
     } catch (err: any) {
+      console.error('Backend Facebook Login Failed:', err);
       setError(err.message || 'Facebook Login Failed');
     } finally {
       setSocialLoading(null);

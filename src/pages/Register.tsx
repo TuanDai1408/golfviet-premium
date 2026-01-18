@@ -70,12 +70,21 @@ const Register: React.FC = () => {
   };
 
   const handleFacebookSuccess = async (response: any) => {
+    console.log('Facebook Login Success Response (Register):', response);
+    const accessToken = response.accessToken;
+    if (!accessToken) {
+      console.error('Facebook accessToken is missing (Register)');
+      setError('Facebook Login Failed: No access token');
+      return;
+    }
     setSocialLoading('facebook');
     try {
       const { token, user } = await apiService.facebookLogin(response.accessToken);
+      console.log('Backend Facebook Login Success (Register):', user.full_name);
       login(token, user);
       navigate('/dashboard');
     } catch (err: any) {
+      console.error('Backend Facebook Login Failed (Register):', err);
       setError(err.message || 'Facebook Login Failed');
     } finally {
       setSocialLoading(null);
