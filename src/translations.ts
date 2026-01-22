@@ -101,6 +101,12 @@ export interface Translations {
         courseNotFound: string;
         internationalStandard: string;
         aboutDescription: string;
+        maxPlayers: string;
+        player: string;
+        players: string;
+        weekdayPrice: string;
+        weekendPrice: string;
+        teeTimes: string;
     };
 
     // 체크아웃 / Thanh toán / Checkout
@@ -344,6 +350,12 @@ export const ko: Translations = {
         courseNotFound: '코스를 찾을 수 없습니다.',
         internationalStandard: '국제 표준 코스',
         aboutDescription: '국제 표준으로 설계된 이 코스는 베트남에서 독특한 도전을 제공합니다. 깨끗한 그린, 전략적으로 배치된 벙커, 자연 경관을 통과하는 멋진 레이아웃을 갖추고 있습니다. 이 지역 최고의 골프 코스 중 하나로 자주 선정됩니다.',
+        maxPlayers: '최대 플레이어 수',
+        player: '인',
+        players: '인',
+        weekdayPrice: '평일 요금',
+        weekendPrice: '주말 요금',
+        teeTimes: '티타임 선택',
     },
     checkout: {
         title: '결제',
@@ -571,6 +583,12 @@ export const vi: Translations = {
         courseNotFound: 'Không tìm thấy sân golf.',
         internationalStandard: 'Sân golf tiêu chuẩn quốc tế',
         aboutDescription: 'Được thiết kế theo tiêu chuẩn quốc tế, sân golf này mang đến thử thách độc đáo tại Việt Nam. Với green nguyên sơ, bunker được đặt chiến lược và bố cục tuyệt đẹp chạy qua cảnh quan tự nhiên. Thường xuyên được xếp hạng trong số các sân golf hàng đầu khu vực.',
+        maxPlayers: 'Số người chơi tối đa',
+        player: 'Người chơi',
+        players: 'Người chơi',
+        weekdayPrice: 'Giá ngày thường',
+        weekendPrice: 'Giá cuối tuần',
+        teeTimes: 'Chọn giờ chơi',
     },
     checkout: {
         title: 'Thanh toán',
@@ -798,6 +816,12 @@ export const en: Translations = {
         courseNotFound: 'Course not found.',
         internationalStandard: 'International Standard Course',
         aboutDescription: 'Designed to international standards, this course offers a unique challenge in Vietnam. Featuring pristine greens, strategically placed bunkers, and a stunning layout that flows through natural landscapes. It is frequently ranked among the top golf courses in the region.',
+        maxPlayers: 'Maximum Players',
+        player: 'Player',
+        players: 'Players',
+        weekdayPrice: 'Weekday Price',
+        weekendPrice: 'Weekend Price',
+        teeTimes: 'Tee Times',
     },
     checkout: {
         title: 'Checkout',

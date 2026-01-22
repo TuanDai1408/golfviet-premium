@@ -2,21 +2,31 @@
 // Component trang chủ - trang landing chính
 // Home page component - main landing page
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { MOCK_COURSES } from '../constants';
-import { useLanguage } from '../contexts/LanguageContext'; // 언어 훅 / Hook ngôn ngữ / Language hook
+import { apiService } from '../services/api';
+import { useLanguage } from '../contexts/LanguageContext';
 
-// 홈 페이지 컴포넌트 / Component trang chủ / Home page component
 export const Home: React.FC = () => {
-  const { t } = useLanguage(); // 번역 객체 가져오기 / Lấy đối tượng dịch / Get translation object
+  const { t } = useLanguage();
   const navigate = useNavigate();
 
-  // 선택된 지역 상태 / Trạng thái khu vực được chọn / Selected location state
+  const [courses, setCourses] = useState<any[]>([]);
   const [selectedCity, setSelectedCity] = useState<string>('All');
-  const [selectedDate, setSelectedDate] = useState<string>('2023-10-25');
+  const [selectedDate, setSelectedDate] = useState<string>('2026-01-21');
 
-  // 검색 핸들러 / Handler tìm kiếm / Search handler
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const data = await apiService.getCourses();
+        setCourses(data);
+      } catch (error) {
+        console.error('Failed to fetch courses for home page:', error);
+      }
+    };
+    fetchCourses();
+  }, []);
+
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (selectedCity !== 'All') {
@@ -28,16 +38,23 @@ export const Home: React.FC = () => {
     navigate(`/courses${params.toString() ? '?' + params.toString() : ''}`);
   };
 
-  // 필터링된 코스 목록 (상위 6개) / Danh sách sân đã lọc (top 6) / Filtered course list (top 6)
   const displayedCourses = useMemo(() => {
-    let filteredCourses = MOCK_COURSES;
+    let filteredCourses = [...courses];
+
+    // Sort by created_at descending (latest first)
+    filteredCourses.sort((a, b) => {
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
 
     if (selectedCity !== 'All') {
-      filteredCourses = MOCK_COURSES.filter(course => course.city === selectedCity);
+      filteredCourses = filteredCourses.filter(course =>
+        (course.address && course.address.includes(selectedCity)) || course.city === selectedCity
+      );
     }
 
     return filteredCourses.slice(0, 6);
-  }, [selectedCity]);
+  }, [selectedCity, courses]);
+
 
   return (
     <div className="flex flex-col w-full">
@@ -142,7 +159,11 @@ export const Home: React.FC = () => {
           {displayedCourses.map(course => (
             <Link to={`/course/${course.id}`} key={course.id} className="group flex flex-col">
               <div className="relative h-64 rounded-2xl overflow-hidden mb-4">
-                <img src={course.image} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt={course.name} />
+                <img
+                  src={(course.images && course.images.length > 0) ? course.images[0] : (course.image || 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&q=80&w=800')}
+                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                  alt={course.name}
+                />
                 {course.isRecommended && (
                   <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm px-3 py-1 rounded-lg border border-white/10">
                     <span className="text-xs font-bold text-primary">{t.home.recommended.toUpperCase()}</span>
@@ -155,17 +176,25 @@ export const Home: React.FC = () => {
                 )}
                 <div className="absolute bottom-4 right-4 bg-white px-2 py-1 rounded-lg shadow-lg flex items-center gap-1">
                   <span className="material-symbols-outlined text-yellow-500 text-sm">star</span>
-                  <span className="text-xs font-bold">{course.rating}</span>
+                  <span className="text-xs font-bold">{course.rating || '5.0'}</span>
                 </div>
               </div>
               <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{course.name}</h3>
               <p className="text-text-secondary text-sm flex items-center gap-1 mt-1">
-                <span className="material-symbols-outlined text-sm">location_on</span> {course.location}
+                <span className="material-symbols-outlined text-sm">location_on</span> {course.address || course.location}
               </p>
               <div className="mt-4 flex items-center justify-between">
                 <div>
                   <p className="text-[10px] text-gray-400 font-bold uppercase">{t.home.startingFrom}</p>
-                  <p className="text-xl font-bold">{(course.price / 1000).toLocaleString()}k <span className="text-sm font-normal text-gray-400">VND</span></p>
+                  <p className="text-xl font-bold">
+                    {(() => {
+                      const isWeekend = [0, 6].includes(new Date().getDay());
+                      const price = isWeekend
+                        ? (course.price_weekend || course.price || 3500000)
+                        : (course.price_weekday || course.price || 2500000);
+                      return (price / 1000).toLocaleString();
+                    })()}k <span className="text-sm font-normal text-gray-400">VND</span>
+                  </p>
                 </div>
                 <div className="size-10 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
                   <span className="material-symbols-outlined">arrow_forward</span>
@@ -174,6 +203,7 @@ export const Home: React.FC = () => {
             </Link>
           ))}
         </div>
+
       </section>
 
       {/* 신뢰/기능 섹션 / Phần tính năng/tin cậy / Trust/Features section */}
