@@ -2,13 +2,23 @@
 // Component trang xác nhận - xác nhận đặt chỗ thành công
 // Confirmation page component - booking success confirmation
 
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext'; // 언어 훅 / Hook ngôn ngữ / Language hook
 
 // 확인 페이지 컴포넌트 / Component trang xác nhận / Confirmation page component
 export const Confirmation: React.FC = () => {
   const { t } = useLanguage(); // 번역 객체 가져오기 / Lấy đối tượng dịch / Get translation object
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { bookingId, courseName, date, time } = location.state || {};
+
+  useEffect(() => {
+    if (!bookingId) {
+      // Optional: Redirect if accessing directly without state
+      // navigate('/dashboard');
+    }
+  }, [bookingId, navigate]);
 
   return (
     <div className="max-w-[800px] mx-auto py-20 px-4 text-center">
@@ -28,13 +38,14 @@ export const Confirmation: React.FC = () => {
           <p className="text-xl text-gray-500 max-w-lg mx-auto leading-relaxed">
             {t.confirmation.description}
           </p>
+          {courseName && <p className="text-md font-bold mt-2">{courseName} - {new Date(date).toLocaleDateString()} @ {time}</p>}
         </div>
 
         {/* 예약 참조 코드 / Mã tham chiếu đặt chỗ / Booking reference code */}
         <div className="w-full bg-white dark:bg-surface-dark border border-dashed border-primary/40 rounded-2xl p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
           <div className="text-left">
             <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">{t.confirmation.bookingReference}</span>
-            <p className="text-3xl font-mono font-black">#VN-GLF-2023-XJ</p>
+            <p className="text-3xl font-mono font-black">#{bookingId ? bookingId.slice(0, 8).toUpperCase() : 'VN-GLF-2023-XJ'}</p>
           </div>
           <button className="flex items-center gap-2 text-primary font-bold hover:underline">
             <span className="material-symbols-outlined text-lg">content_copy</span> {t.confirmation.copyCode}

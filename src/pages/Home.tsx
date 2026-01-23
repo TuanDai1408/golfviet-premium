@@ -12,16 +12,20 @@ export const Home: React.FC = () => {
   const navigate = useNavigate();
 
   const [courses, setCourses] = useState<any[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const [selectedCity, setSelectedCity] = useState<string>('All');
-  const [selectedDate, setSelectedDate] = useState<string>('2026-01-21');
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
 
   useEffect(() => {
     const fetchCourses = async () => {
+      setLoading(true);
       try {
         const data = await apiService.getCourses();
         setCourses(data);
       } catch (error) {
         console.error('Failed to fetch courses for home page:', error);
+      } finally {
+        setLoading(false);
       }
     };
     fetchCourses();
@@ -30,12 +34,12 @@ export const Home: React.FC = () => {
   const handleSearch = () => {
     const params = new URLSearchParams();
     if (selectedCity !== 'All') {
-      params.append('city', selectedCity);
+      params.append('region', selectedCity);
     }
     if (selectedDate) {
       params.append('date', selectedDate);
     }
-    navigate(`/courses${params.toString() ? '?' + params.toString() : ''}`);
+    navigate(`/courses?${params.toString()}`);
   };
 
   const displayedCourses = useMemo(() => {
@@ -43,12 +47,13 @@ export const Home: React.FC = () => {
 
     // Sort by created_at descending (latest first)
     filteredCourses.sort((a, b) => {
-      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      return new Date(b.created_at || 0).getTime() - new Date(a.created_at || 0).getTime();
     });
 
     if (selectedCity !== 'All') {
       filteredCourses = filteredCourses.filter(course =>
-        (course.address && course.address.includes(selectedCity)) || course.city === selectedCity
+        (course.region && course.region === selectedCity) ||
+        (course.address && course.address.includes(selectedCity))
       );
     }
 
@@ -78,7 +83,7 @@ export const Home: React.FC = () => {
             </div>
 
             {/* 메인 타이틀 / Tiêu đề chính / Main title */}
-            <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight leading-[1.1] mb-6 drop-shadow-lg">
+            <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight leading-[1.1] mb-6 drop-shadow-lg text-shadow-lg">
               {t.home.heroTitle1}<br />
               <span className="text-primary">{t.home.heroTitle2}</span>
             </h1>
@@ -101,9 +106,15 @@ export const Home: React.FC = () => {
                     onChange={(e) => setSelectedCity(e.target.value)}
                   >
                     <option value="All">{t.home.allLocations}</option>
-                    <option value="Hanoi">{t.cities.hanoi}</option>
-                    <option value="Da Nang">{t.cities.daNang}</option>
-                    <option value="Ho Chi Minh City">{t.cities.hoChiMinh}</option>
+                    <optgroup label={t.courseList.north}>
+                      <option value="Hanoi">{t.cities.hanoi}</option>
+                    </optgroup>
+                    <optgroup label={t.courseList.central}>
+                      <option value="Da Nang">{t.cities.daNang}</option>
+                    </optgroup>
+                    <optgroup label={t.courseList.south}>
+                      <option value="Ho Chi Minh City">{t.cities.hoChiMinh}</option>
+                    </optgroup>
                   </select>
                 </div>
               </div>
@@ -156,52 +167,67 @@ export const Home: React.FC = () => {
 
         {/* 코스 그리드 / Lưới sân / Course grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {displayedCourses.map(course => (
-            <Link to={`/course/${course.id}`} key={course.id} className="group flex flex-col">
-              <div className="relative h-64 rounded-2xl overflow-hidden mb-4">
-                <img
-                  src={(course.images && course.images.length > 0) ? course.images[0] : (course.image || 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&q=80&w=800')}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
-                  alt={course.name}
-                />
-                {course.isRecommended && (
-                  <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm px-3 py-1 rounded-lg border border-white/10">
-                    <span className="text-xs font-bold text-primary">{t.home.recommended.toUpperCase()}</span>
-                  </div>
-                )}
-                {course.deal && (
-                  <div className="absolute top-4 right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded">
-                    {course.deal}
-                  </div>
-                )}
-                <div className="absolute bottom-4 right-4 bg-white px-2 py-1 rounded-lg shadow-lg flex items-center gap-1">
-                  <span className="material-symbols-outlined text-yellow-500 text-sm">star</span>
-                  <span className="text-xs font-bold">{course.rating || '5.0'}</span>
+          {loading ? (
+            // Skeleton Loading
+            Array.from({ length: 6 }).map((_, index) => (
+              <div key={index} className="flex flex-col animate-pulse">
+                <div className="h-64 rounded-2xl bg-gray-200 mb-4"></div>
+                <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
+                <div className="h-4 bg-gray-200 rounded w-1/2 mb-4"></div>
+                <div className="flex justify-between items-center mt-auto">
+                  <div className="h-10 bg-gray-200 rounded w-1/3"></div>
+                  <div className="size-10 rounded-full bg-gray-200"></div>
                 </div>
               </div>
-              <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{course.name}</h3>
-              <p className="text-text-secondary text-sm flex items-center gap-1 mt-1">
-                <span className="material-symbols-outlined text-sm">location_on</span> {course.address || course.location}
-              </p>
-              <div className="mt-4 flex items-center justify-between">
-                <div>
-                  <p className="text-[10px] text-gray-400 font-bold uppercase">{t.home.startingFrom}</p>
-                  <p className="text-xl font-bold">
-                    {(() => {
-                      const isWeekend = [0, 6].includes(new Date().getDay());
-                      const price = isWeekend
-                        ? (course.price_weekend || course.price || 3500000)
-                        : (course.price_weekday || course.price || 2500000);
-                      return (price / 1000).toLocaleString();
-                    })()}k <span className="text-sm font-normal text-gray-400">VND</span>
-                  </p>
+            ))
+          ) : (
+            displayedCourses.map(course => (
+              <Link to={`/course/${course.id}`} key={course.id} className="group flex flex-col">
+                <div className="relative h-64 rounded-2xl overflow-hidden mb-4">
+                  <img
+                    src={(course.images && course.images.length > 0) ? course.images[0] : (course.image || 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&q=80&w=800')}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+                    alt={course.name}
+                  />
+                  {course.isRecommended && (
+                    <div className="absolute top-4 left-4 bg-black/80 backdrop-blur-sm px-3 py-1 rounded-lg border border-white/10">
+                      <span className="text-xs font-bold text-primary">{t.home.recommended.toUpperCase()}</span>
+                    </div>
+                  )}
+                  {course.deal && (
+                    <div className="absolute top-4 right-4 bg-red-500 text-white text-[10px] font-bold px-2 py-1 rounded">
+                      {course.deal}
+                    </div>
+                  )}
+                  <div className="absolute bottom-4 right-4 bg-white px-2 py-1 rounded-lg shadow-lg flex items-center gap-1">
+                    <span className="material-symbols-outlined text-yellow-500 text-sm">star</span>
+                    <span className="text-xs font-bold">{course.rating || '5.0'}</span>
+                  </div>
                 </div>
-                <div className="size-10 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
-                  <span className="material-symbols-outlined">arrow_forward</span>
+                <h3 className="text-xl font-bold group-hover:text-primary transition-colors">{course.name}</h3>
+                <p className="text-text-secondary text-sm flex items-center gap-1 mt-1">
+                  <span className="material-symbols-outlined text-sm">location_on</span> {course.address || course.location}
+                </p>
+                <div className="mt-4 flex items-center justify-between">
+                  <div>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase">{t.home.startingFrom}</p>
+                    <p className="text-xl font-bold">
+                      {(() => {
+                        const isWeekend = [0, 6].includes(new Date().getDay());
+                        const price = isWeekend
+                          ? (course.price_weekend || course.price || 3500000)
+                          : (course.price_weekday || course.price || 2500000);
+                        return (price / 1000).toLocaleString();
+                      })()}k <span className="text-sm font-normal text-gray-400">VND</span>
+                    </p>
+                  </div>
+                  <div className="size-10 rounded-full bg-gray-100 flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-all">
+                    <span className="material-symbols-outlined">arrow_forward</span>
+                  </div>
                 </div>
-              </div>
-            </Link>
-          ))}
+              </Link>
+            ))
+          )}
         </div>
 
       </section>

@@ -39,6 +39,8 @@ export interface Booking {
 export interface User {
   id: string;
   email: string;
+  phone?: string;
+  role?: string;
   full_name?: string;
   avatar_url?: string;
   name: string; // Keep for compatibility with existing code if any
