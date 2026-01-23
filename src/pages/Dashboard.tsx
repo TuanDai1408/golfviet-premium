@@ -2,10 +2,12 @@
 // Component trang bảng điều khiển - bảng điều khiển đặt chỗ và thống k của người dùng
 // Dashboard page component - user bookings and statistics dashboard
 
-import React, { useState } from 'react';
-import { MOCK_USER, MOCK_BOOKINGS, MOCK_COURSES } from '../constants';
-import { Link } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { MOCK_USER, MOCK_COURSES } from '../constants';
+import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext'; // 언어 훅 / Hook ngôn ngữ / Language hook
+import { useAuth } from '../contexts/AuthContext';
+import { apiService } from '../services/api';
 
 // 통계 카드 컴포넌트 / Component thẻ thống kê / Stats card component
 const StatsCard: React.FC<{ icon: string, label: string, value: string, sub: string, color: string }> = ({ icon, label, value, sub, color }) => (
@@ -23,12 +25,42 @@ const StatsCard: React.FC<{ icon: string, label: string, value: string, sub: str
 
 // 대시보드 페이지 컴포넌트 / Component trang bảng điều khiển / Dashboard page component
 export const Dashboard: React.FC = () => {
-  const { t } = useLanguage(); // 번역 객체 가져오기 / Lấy đối tượng dịch / Get translation object
+  const { t } = useLanguage();
+  const { user } = useAuth();
+  const navigate = useNavigate();
   const [view, setView] = useState<'Upcoming' | 'Past'>('Upcoming');
+  const [bookings, setBookings] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // 다음 예약 정보 / Thông tin đặt chỗ tiếp theo / Next booking info
-  const nextBooking = MOCK_BOOKINGS[0];
-  const nextCourse = MOCK_COURSES.find(c => c.id === nextBooking.courseId);
+  useEffect(() => {
+    if (!user) {
+      navigate('/login');
+      return;
+    }
+
+    const fetchBookings = async () => {
+      try {
+        const data = await apiService.getMyBookings();
+        setBookings(data);
+      } catch (error) {
+        console.error('Failed to fetch bookings:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, [user, navigate]);
+
+  if (loading) return <div className="p-20 text-center">Loading dashboard...</div>;
+
+  // Sắp xếp booking theo ngày mới nhất
+  const sortedBookings = [...bookings].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+
+  // Lấy booking sắp tới (logic đơn giản: booking đầu tiên trong list đã sort - thực tế nên check ngày > hiện tại)
+  // Demo: Lấy booking mới nhất làm "Next Tee Time"
+  const nextBooking = sortedBookings[0];
+  const nextCourse = nextBooking ? (nextBooking.golf_courses || MOCK_COURSES.find(c => c.id === nextBooking.golf_course_id)) : null;
 
   return (
     <div className="max-w-[1200px] mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col gap-8">
@@ -60,16 +92,16 @@ export const Dashboard: React.FC = () => {
 
       {/* 통계 카드 / Thẻ thống kê / Stats cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatsCard icon="sports_golf" label={t.dashboard.totalGames} value="24" sub={`+2 ${t.dashboard.thisMonth}`} color="bg-blue-100 text-blue-600 dark:bg-blue-900/30" />
-        <StatsCard icon="calendar_month" label={t.dashboard.upcomingGames} value="2" sub={`${t.dashboard.nextDate}: Oct 24`} color="bg-green-100 text-green-600 dark:bg-green-900/30" />
-        <StatsCard icon="loyalty" label={t.dashboard.points} value={MOCK_USER.points.toLocaleString()} sub={`+150 ${t.dashboard.pointsPending}`} color="bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30" />
+        <StatsCard icon="sports_golf" label={t.dashboard.totalGames} value={`${bookings.length}`} sub={`+${bookings.filter(b => new Date(b.created_at).getMonth() === new Date().getMonth()).length} ${t.dashboard.thisMonth}`} color="bg-blue-100 text-blue-600 dark:bg-blue-900/30" />
+        <StatsCard icon="calendar_month" label={t.dashboard.upcomingGames} value={`${sortedBookings.length}`} sub={`${t.dashboard.nextDate}: ${nextBooking?.tee_time_instances?.play_date || '--'}`} color="bg-green-100 text-green-600 dark:bg-green-900/30" />
+        <StatsCard icon="loyalty" label={t.dashboard.points} value={(user?.points || 0).toLocaleString()} sub={`+150 ${t.dashboard.pointsPending}`} color="bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30" />
 
         {/* 멤버십 카드 / Thẻ thành viên / Membership card */}
         <div className="flex flex-col gap-1 rounded-xl p-5 bg-gradient-to-br from-[#112118] to-[#1e3a2b] text-white border border-[#2a3c32] shadow-sm">
           <div className="flex justify-between items-start">
             <div>
               <p className="text-gray-300 text-sm font-medium">{t.dashboard.membership}</p>
-              <p className="text-xl font-bold mt-1">{MOCK_USER.tier}</p>
+              <p className="text-xl font-bold mt-1">{user?.tier || 'Gold'}</p>
             </div>
             <span className="material-symbols-outlined text-yellow-400">verified</span>
           </div>
@@ -106,9 +138,9 @@ export const Dashboard: React.FC = () => {
                 <div className="absolute bottom-0 left-0 z-20 p-6 w-full">
                   <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{nextCourse.name}</h3>
                   <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm md:text-base font-medium">
-                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">calendar_month</span> {nextBooking.date}</span>
-                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">schedule</span> {nextBooking.time}</span>
-                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">location_on</span> {nextCourse.city}</span>
+                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">calendar_month</span> {nextBooking.tee_time_instances?.play_date || new Date(nextBooking.created_at).toLocaleDateString()}</span>
+                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">schedule</span> {nextBooking.tee_time_instances?.tee_time || '07:00'}</span>
+                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">location_on</span> {nextCourse.address || nextCourse.city}</span>
                   </div>
                 </div>
               </div>
@@ -133,8 +165,10 @@ export const Dashboard: React.FC = () => {
 
           {/* 예정된 예약 목록 / Danh sách đặt chỗ sắp tới / Upcoming reservations list */}
           <h2 className="text-lg font-bold mt-4">{t.dashboard.upcomingReservations}</h2>
-          {MOCK_BOOKINGS.slice(1).map((booking) => {
-            const course = MOCK_COURSES.find(c => c.id === booking.courseId);
+          {sortedBookings.slice(1).map((booking) => {
+            const course = booking.golf_courses || MOCK_COURSES.find(c => c.id === booking.golf_course_id);
+            const playDate = booking.tee_time_instances?.play_date || new Date(booking.created_at).toLocaleDateString();
+            const teeTime = booking.tee_time_instances?.tee_time || '07:00';
             return (
               <div key={booking.id} className="group flex flex-col sm:flex-row gap-4 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-[#dce5e0] dark:border-[#2a3c32] hover:border-primary transition-all">
                 <img src={course?.image} className="sm:w-32 h-32 sm:h-auto shrink-0 rounded-lg object-cover" alt="" />
@@ -149,11 +183,11 @@ export const Dashboard: React.FC = () => {
                   <div className="grid grid-cols-2 gap-4 my-3">
                     <div className="flex items-center gap-2 text-sm">
                       <span className="material-symbols-outlined text-primary text-lg">calendar_month</span>
-                      <span>{booking.date}</span>
+                      <span>{playDate}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <span className="material-symbols-outlined text-primary text-lg">schedule</span>
-                      <span>{booking.time}</span>
+                      <span>{teeTime}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-100 dark:border-[#2a3c32]">
@@ -199,8 +233,8 @@ export const Dashboard: React.FC = () => {
               <span className="material-symbols-outlined text-8xl">wb_sunny</span>
             </div>
             <div className="relative z-10">
-              <p className="text-sm font-medium text-blue-100">{t.dashboard.forecast} {nextBooking.date}</p>
-              <h3 className="font-bold text-xl mt-1">{nextCourse?.city}</h3>
+              <p className="text-sm font-medium text-blue-100">{t.dashboard.forecast} {nextBooking?.tee_time_instances?.play_date}</p>
+              <h3 className="font-bold text-xl mt-1">{nextCourse?.city || nextCourse?.address}</h3>
               <div className="flex items-center gap-4 mt-4">
                 <span className="text-5xl font-bold tracking-tighter">28°</span>
                 <div className="text-sm text-blue-100">

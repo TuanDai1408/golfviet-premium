@@ -31,6 +31,16 @@ export const Profile: React.FC = () => {
 
   const { language, setLanguage } = useLanguage();
 
+  // Sync formData with user object when it's updated (e.g., from fetch)
+  React.useEffect(() => {
+    if (user) {
+      setFormData({
+        full_name: user.full_name || '',
+        phone: user.phone || ''
+      });
+    }
+  }, [user]);
+
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData(prev => ({ ...prev, [name]: value }));
