@@ -81,6 +81,20 @@ export interface Translations {
         holes: string;
         book: string;
         deal: string;
+        searchPlaceholder: string;
+        holesCount: string;
+        playersCount: string;
+        priceRange: string;
+        teeTime: string;
+        sortByRegion: string;
+        sortByPrice: string;
+        sortByHoles: string;
+        clearAll: string;
+        bookNow: string;
+        all: string;
+        north: string;
+        central: string;
+        south: string;
     };
 
     // 코스 상세 / Chi tiết sân golf / Course detail
@@ -101,6 +115,12 @@ export interface Translations {
         courseNotFound: string;
         internationalStandard: string;
         aboutDescription: string;
+        maxPlayers: string;
+        player: string;
+        players: string;
+        weekdayPrice: string;
+        weekendPrice: string;
+        teeTimes: string;
     };
 
     // 체크아웃 / Thanh toán / Checkout
@@ -197,6 +217,7 @@ export interface Translations {
         createAccount: string;
         joinCommunity: string;
         fullName: string;
+        email: string;
         phone: string;
         confirmPassword: string;
         passwordMismatch: string;
@@ -320,12 +341,26 @@ export const ko: Translations = {
         region: '지역',
         dateTime: '날짜 및 시간',
         availableCourses: '이용 가능한 코스',
-        showingBestMatches: '중부 베트남 최고의 매치 표시',
-        sortBy: '정렬 기준: 추천',
+        showingBestMatches: '최고의 매치 표시',
+        sortBy: '정렬 기준',
         slotsAvailable: '슬롯 이용 가능',
         holes: '홀',
         book: '예약',
         deal: '특가',
+        searchPlaceholder: '골프장 이름 검색...',
+        holesCount: '홀 수',
+        playersCount: '인원 수',
+        priceRange: '가격 범위',
+        teeTime: '티타임',
+        sortByRegion: '지역별 정렬',
+        sortByPrice: '가격순 정렬',
+        sortByHoles: '홀 수순 정렬',
+        clearAll: '필터 초기화',
+        bookNow: '지금 예약',
+        all: '전체',
+        north: '북부',
+        central: '중부',
+        south: '남부',
     },
     courseDetail: {
         premiumPartner: '프리미엄 파트너',
@@ -344,6 +379,12 @@ export const ko: Translations = {
         courseNotFound: '코스를 찾을 수 없습니다.',
         internationalStandard: '국제 표준 코스',
         aboutDescription: '국제 표준으로 설계된 이 코스는 베트남에서 독특한 도전을 제공합니다. 깨끗한 그린, 전략적으로 배치된 벙커, 자연 경관을 통과하는 멋진 레이아웃을 갖추고 있습니다. 이 지역 최고의 골프 코스 중 하나로 자주 선정됩니다.',
+        maxPlayers: '최대 플레이어 수',
+        player: '인',
+        players: '인',
+        weekdayPrice: '평일 요금',
+        weekendPrice: '주말 요금',
+        teeTimes: '티타임 선택',
     },
     checkout: {
         title: '결제',
@@ -426,6 +467,7 @@ export const ko: Translations = {
         createAccount: '계정 생성',
         joinCommunity: 'GolfViet 커뮤니티에 참여하세요',
         fullName: '성함',
+        email: '이메일',
         phone: '전화번호',
         confirmPassword: '비밀번호 확인',
         passwordMismatch: '비밀번호가 일치하지 않습니다',
@@ -547,12 +589,26 @@ export const vi: Translations = {
         region: 'Khu vực',
         dateTime: 'Ngày & Giờ',
         availableCourses: 'Sân golf có sẵn',
-        showingBestMatches: 'Hiển thị kết quả phù hợp nhất ở Miền Trung',
-        sortBy: 'Sắp xếp theo: Đề xuất',
+        showingBestMatches: 'Hiển thị kết quả phù hợp nhất tại',
+        sortBy: 'Sắp xếp theo',
         slotsAvailable: 'Còn chỗ',
         holes: 'Hố',
         book: 'Đặt',
         deal: 'Ưu đãi',
+        searchPlaceholder: 'Tìm kiếm tên sân...',
+        holesCount: 'Số hố',
+        playersCount: 'Số người chơi',
+        priceRange: 'Mức giá',
+        teeTime: 'Giờ chơi',
+        sortByRegion: 'Sắp xếp theo vùng',
+        sortByPrice: 'Sắp xếp theo giá',
+        sortByHoles: 'Sắp xếp theo số hố',
+        clearAll: 'Xóa tất cả',
+        bookNow: 'Đặt ngay',
+        all: 'Tất cả',
+        north: 'Miền Bắc',
+        central: 'Miền Trung',
+        south: 'Miền Nam',
     },
     courseDetail: {
         premiumPartner: 'Đối tác cao cấp',
@@ -571,6 +627,12 @@ export const vi: Translations = {
         courseNotFound: 'Không tìm thấy sân golf.',
         internationalStandard: 'Sân golf tiêu chuẩn quốc tế',
         aboutDescription: 'Được thiết kế theo tiêu chuẩn quốc tế, sân golf này mang đến thử thách độc đáo tại Việt Nam. Với green nguyên sơ, bunker được đặt chiến lược và bố cục tuyệt đẹp chạy qua cảnh quan tự nhiên. Thường xuyên được xếp hạng trong số các sân golf hàng đầu khu vực.',
+        maxPlayers: 'Số người chơi tối đa',
+        player: 'Người chơi',
+        players: 'Người chơi',
+        weekdayPrice: 'Giá ngày thường',
+        weekendPrice: 'Giá cuối tuần',
+        teeTimes: 'Chọn giờ chơi',
     },
     checkout: {
         title: 'Thanh toán',
@@ -653,6 +715,7 @@ export const vi: Translations = {
         createAccount: 'Tạo tài khoản',
         joinCommunity: 'Tham gia cộng đồng GolfViet',
         fullName: 'Họ và tên',
+        email: 'Email',
         phone: 'Số điện thoại',
         confirmPassword: 'Nhập lại mật khẩu',
         passwordMismatch: 'Mật khẩu không khớp',
@@ -774,12 +837,26 @@ export const en: Translations = {
         region: 'Region',
         dateTime: 'Date & Time',
         availableCourses: 'Available Courses',
-        showingBestMatches: 'Showing best matches in Central Vietnam',
-        sortBy: 'Sort by: Recommended',
+        showingBestMatches: 'Showing best matches in',
+        sortBy: 'Sort by',
         slotsAvailable: 'Slots Available',
         holes: 'Holes',
         book: 'Book',
         deal: 'Deal',
+        searchPlaceholder: 'Search course name...',
+        holesCount: 'Number of Holes',
+        playersCount: 'Number of Players',
+        priceRange: 'Price Range',
+        teeTime: 'Tee Time',
+        sortByRegion: 'Sort by Region',
+        sortByPrice: 'Sort by Price',
+        sortByHoles: 'Sort by Holes',
+        clearAll: 'Clear All',
+        bookNow: 'Book Now',
+        all: 'All',
+        north: 'North',
+        central: 'Central',
+        south: 'South',
     },
     courseDetail: {
         premiumPartner: 'Premium Partner',
@@ -798,6 +875,12 @@ export const en: Translations = {
         courseNotFound: 'Course not found.',
         internationalStandard: 'International Standard Course',
         aboutDescription: 'Designed to international standards, this course offers a unique challenge in Vietnam. Featuring pristine greens, strategically placed bunkers, and a stunning layout that flows through natural landscapes. It is frequently ranked among the top golf courses in the region.',
+        maxPlayers: 'Maximum Players',
+        player: 'Player',
+        players: 'Players',
+        weekdayPrice: 'Weekday Price',
+        weekendPrice: 'Weekend Price',
+        teeTimes: 'Tee Times',
     },
     checkout: {
         title: 'Checkout',
@@ -880,6 +963,7 @@ export const en: Translations = {
         createAccount: 'Create Account',
         joinCommunity: 'Join the GolfViet community',
         fullName: 'Full Name',
+        email: 'Email',
         phone: 'Phone Number',
         confirmPassword: 'Confirm Password',
         passwordMismatch: 'Passwords do not match',

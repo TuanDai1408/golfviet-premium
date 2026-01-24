@@ -27,12 +27,39 @@ const Login: React.FC = () => {
   }, [user, authLoading, navigate]);
 
   const googleLogin = useGoogleLogin({
-    flow: 'auth-code',
-    onSuccess: async (codeResponse) => {
+    onSuccess: async (tokenResponse) => {
       setSocialLoading('google');
       try {
-        const { token, user } = await apiService.googleLogin(codeResponse.code);
-        login(token, user);
+        // Fetch user info from Google
+        const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        });
+        const googleUser = await res.json();
+
+        const response = await apiService.handleSocialAuth({
+          user: {
+            email: googleUser.email,
+            id: googleUser.sub,
+            user_metadata: {
+              full_name: googleUser.name,
+              avatar_url: googleUser.picture,
+            },
+            app_metadata: {
+              provider: 'google'
+            }
+          }
+        });
+
+        // Use info directly from Google (userinfo) as requested
+        const finalUser = {
+          ...response.user,
+          full_name: googleUser.name || response.user.full_name,
+          avatar_url: googleUser.picture || response.user.avatar_url,
+          name: googleUser.name || response.user.name,
+          avatar: googleUser.picture || response.user.avatar
+        };
+
+        login(response.token, finalUser);
         navigate('/dashboard');
       } catch (err: any) {
         setError(err.message || 'Google Login Failed');
@@ -65,22 +92,38 @@ const Login: React.FC = () => {
   };
 
   const handleFacebookSuccess = async (response: any) => {
-    console.log('Facebook Login Success Response:', response);
-    const accessToken = response.accessToken;
-    if (!accessToken) {
-      console.error('Facebook accessToken is missing in response');
-      setError('Facebook Login Failed: No access token');
-      return;
-    }
-    console.log('Sending Facebook accessToken to backend:', accessToken.substring(0, 10) + '...');
     setSocialLoading('facebook');
     try {
-      const { token, user } = await apiService.facebookLogin(response.accessToken);
-      console.log('Backend Facebook Login Success:', user.full_name);
-      login(token, user);
+      // Get profile info from FB
+      const profileRes = await fetch(`https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${response.accessToken}`);
+      const fbProfile = await profileRes.json();
+
+      const res = await apiService.handleSocialAuth({
+        user: {
+          email: fbProfile.email,
+          id: fbProfile.id,
+          user_metadata: {
+            full_name: fbProfile.name,
+            avatar_url: fbProfile.picture?.data?.url,
+          },
+          app_metadata: {
+            provider: 'facebook'
+          }
+        }
+      });
+
+      // Use info directly from Facebook (userinfo) as requested
+      const finalUser = {
+        ...res.user,
+        full_name: fbProfile.name || res.user.full_name,
+        avatar_url: fbProfile.picture?.data?.url || res.user.avatar_url,
+        name: fbProfile.name || res.user.name,
+        avatar: fbProfile.picture?.data?.url || res.user.avatar
+      };
+
+      login(res.token, finalUser);
       navigate('/dashboard');
     } catch (err: any) {
-      console.error('Backend Facebook Login Failed:', err);
       setError(err.message || 'Facebook Login Failed');
     } finally {
       setSocialLoading(null);
@@ -232,6 +275,9 @@ const Login: React.FC = () => {
           <FacebookLogin
             appId={import.meta.env.VITE_FACEBOOK_APP_ID || ''}
             onSuccess={handleFacebookSuccess}
+            onProfileSuccess={(profile) => {
+              console.log('Facebook Profile Success:', profile);
+            }}
             onFail={(error) => {
               console.error('FB Login Error:', error);
               setError('Facebook Login Failed');

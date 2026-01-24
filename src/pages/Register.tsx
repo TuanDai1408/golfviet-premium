@@ -12,6 +12,7 @@ const Register: React.FC = () => {
   const { t } = useLanguage();
   const [formData, setFormData] = useState({
     full_name: '',
+    email: '',
     phone: '',
     password: '',
     confirmPassword: ''
@@ -32,12 +33,38 @@ const Register: React.FC = () => {
   }, [user, authLoading, navigate]);
 
   const googleLogin = useGoogleLogin({
-    flow: 'auth-code',
-    onSuccess: async (codeResponse) => {
+    onSuccess: async (tokenResponse) => {
       setSocialLoading('google');
       try {
-        const { token, user } = await apiService.googleLogin(codeResponse.code);
-        login(token, user);
+        const res = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+        });
+        const googleUser = await res.json();
+
+        const response = await apiService.handleSocialAuth({
+          user: {
+            email: googleUser.email,
+            id: googleUser.sub,
+            user_metadata: {
+              full_name: googleUser.name,
+              avatar_url: googleUser.picture,
+            },
+            app_metadata: {
+              provider: 'google'
+            }
+          }
+        });
+
+        // Use info directly from Google (userinfo)
+        const finalUser = {
+          ...response.user,
+          full_name: googleUser.name || response.user.full_name,
+          avatar_url: googleUser.picture || response.user.avatar_url,
+          name: googleUser.name || response.user.name,
+          avatar: googleUser.picture || response.user.avatar
+        };
+
+        login(response.token, finalUser);
         navigate('/dashboard');
       } catch (err: any) {
         setError(err.message || 'Google Login Failed');
@@ -70,21 +97,37 @@ const Register: React.FC = () => {
   };
 
   const handleFacebookSuccess = async (response: any) => {
-    console.log('Facebook Login Success Response (Register):', response);
-    const accessToken = response.accessToken;
-    if (!accessToken) {
-      console.error('Facebook accessToken is missing (Register)');
-      setError('Facebook Login Failed: No access token');
-      return;
-    }
     setSocialLoading('facebook');
     try {
-      const { token, user } = await apiService.facebookLogin(response.accessToken);
-      console.log('Backend Facebook Login Success (Register):', user.full_name);
-      login(token, user);
+      const profileRes = await fetch(`https://graph.facebook.com/me?fields=id,name,email,picture&access_token=${response.accessToken}`);
+      const fbProfile = await profileRes.json();
+
+      const res = await apiService.handleSocialAuth({
+        user: {
+          email: fbProfile.email,
+          id: fbProfile.id,
+          user_metadata: {
+            full_name: fbProfile.name,
+            avatar_url: fbProfile.picture?.data?.url,
+          },
+          app_metadata: {
+            provider: 'facebook'
+          }
+        }
+      });
+
+      // Use info directly from Facebook (userinfo)
+      const finalUser = {
+        ...res.user,
+        full_name: fbProfile.name || res.user.full_name,
+        avatar_url: fbProfile.picture?.data?.url || res.user.avatar_url,
+        name: fbProfile.name || res.user.name,
+        avatar: fbProfile.picture?.data?.url || res.user.avatar
+      };
+
+      login(res.token, finalUser);
       navigate('/dashboard');
     } catch (err: any) {
-      console.error('Backend Facebook Login Failed (Register):', err);
       setError(err.message || 'Facebook Login Failed');
     } finally {
       setSocialLoading(null);
@@ -148,6 +191,9 @@ const Register: React.FC = () => {
     // Real-time validation
     if (name === 'phone') {
       validatePhone(value);
+    }
+    if (name === 'email') {
+      // Basic email validation if needed
     }
     if (name === 'password') {
       checkPasswordStrength(value);
@@ -245,6 +291,22 @@ const Register: React.FC = () => {
                   value={formData.full_name}
                   onChange={handleInputChange}
                   placeholder="Nguyễn Văn A"
+                  className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-green-500/50 focus:bg-white/10 transition-all"
+                  required
+                />
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <label className="text-sm font-medium text-gray-300 ml-1">{t.auth.email}</label>
+              <div className="relative group">
+                <Mail className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-green-400 transition-colors w-5 h-5" />
+                <input
+                  type="email"
+                  name="email"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  placeholder="email@example.com"
                   className="w-full bg-white/5 border border-white/10 rounded-xl py-3.5 pl-12 pr-4 text-white placeholder:text-gray-600 focus:outline-none focus:border-green-500/50 focus:bg-white/10 transition-all"
                   required
                 />

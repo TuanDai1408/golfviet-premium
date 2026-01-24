@@ -1,8 +1,12 @@
 import { supabase } from '../lib/supabase';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://golfviet-premium-backend-production.up.railway.app/api';
 
 class ApiService {
+  constructor() {
+    console.log('ApiService initialized with API_URL:', API_URL);
+  }
+
   private async request(endpoint: string, options: RequestInit = {}) {
     const token = localStorage.getItem('auth_token');
     const headers = {
@@ -11,10 +15,19 @@ class ApiService {
       ...options.headers,
     };
 
+    console.log('API Request:', `${API_URL}${endpoint}`, options); // Debug log
+
     const response = await fetch(`${API_URL}${endpoint}`, {
       ...options,
       headers,
     });
+
+    const contentType = response.headers.get("content-type");
+    if (contentType && contentType.indexOf("application/json") === -1) {
+      const text = await response.text();
+      console.error('API Error: Expected JSON but got:', text);
+      throw new Error(`Unexpected content type: ${contentType}. Body: ${text.substring(0, 100)}...`);
+    }
 
     if (!response.ok) {
       const error = await response.json();
@@ -62,23 +75,6 @@ class ApiService {
     return data;
   }
 
-  async googleLogin(code: string) {
-    const data = await this.request('/auth/google', {
-      method: 'POST',
-      body: JSON.stringify({ code }),
-    });
-    if (data.token) localStorage.setItem('auth_token', data.token);
-    return data;
-  }
-
-  async facebookLogin(accessToken: string) {
-    const data = await this.request('/auth/facebook', {
-      method: 'POST',
-      body: JSON.stringify({ accessToken }),
-    });
-    if (data.token) localStorage.setItem('auth_token', data.token);
-    return data;
-  }
 
   async handleSocialAuth(session: any) {
     // Sync with backend to get our own JWT token
@@ -86,8 +82,8 @@ class ApiService {
       method: 'POST',
       body: JSON.stringify({
         email: session.user.email,
-        full_name: session.user.user_metadata.full_name,
-        avatar_url: session.user.user_metadata.avatar_url,
+        full_name: session.user.user_metadata.full_name || session.user.user_metadata.name,
+        avatar_url: session.user.user_metadata.avatar_url || session.user.user_metadata.picture,
         provider: session.user.app_metadata.provider,
         id: session.user.id
       }),
@@ -96,7 +92,11 @@ class ApiService {
     return data;
   }
 
-  async updateProfile(userData: { full_name?: string; phone?: string }) {
+  async getProfile() {
+    return this.request('/auth/profile');
+  }
+
+  async updateProfile(userData: { full_name?: string; phone?: string; avatar_url?: string }) {
     return this.request('/auth/profile', {
       method: 'PUT',
       body: JSON.stringify(userData),
@@ -135,6 +135,19 @@ class ApiService {
     return this.request('/bookings', {
       method: 'POST',
       body: JSON.stringify(bookingData),
+    });
+  }
+
+  async lockBooking(bookingData: any) {
+    return this.request('/bookings/lock', {
+      method: 'POST',
+      body: JSON.stringify(bookingData),
+    });
+  }
+
+  async confirmBooking(bookingId: string) {
+    return this.request(`/bookings/${bookingId}/confirm`, {
+      method: 'PUT',
     });
   }
 
