@@ -145,6 +145,13 @@ class ApiService {
     });
   }
 
+  async bookPayLater(bookingData: any) {
+    return this.request('/bookings/pay-later', {
+      method: 'POST',
+      body: JSON.stringify(bookingData),
+    });
+  }
+
   async confirmBooking(bookingId: string) {
     return this.request(`/bookings/${bookingId}/confirm`, {
       method: 'PUT',

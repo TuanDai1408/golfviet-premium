@@ -15,6 +15,7 @@ export const CourseDetail: React.FC = () => {
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [selectedSlot, setSelectedSlot] = useState<any>(null); // Changed to object to hold instance ID
   const [teeTimes, setTeeTimes] = useState<any[]>([]);
+  const [numPlayers, setNumPlayers] = useState<number>(4);
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -90,8 +91,8 @@ export const CourseDetail: React.FC = () => {
       let bookingData = {
         golf_course_id: course.id,
         tee_time_instance_id: selectedSlot.id.toString().startsWith('demo') ? null : selectedSlot.id,
-        players: 4, // Defaulting to 4 for now, or match Filter
-        total_price: (currentPrice * 4) + 1200000 + 600000, // Approx calculation matching checkout
+        players: numPlayers,
+        total_price: (currentPrice * numPlayers) + 1200000 + 600000, // Approx calculation matching checkout
         play_date: selectedDate,
         tee_time: selectedSlot.tee_time
       };
@@ -107,7 +108,7 @@ export const CourseDetail: React.FC = () => {
             date: selectedDate,
             time: selectedSlot.tee_time,
             price: currentPrice,
-            players: 4
+            players: numPlayers
           }
         }
       });
@@ -240,6 +241,24 @@ export const CourseDetail: React.FC = () => {
 
             <div className="mb-8">
               <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-bold">Số lượng người chơi</span>
+                <span className="text-xs text-gray-400">Tối đa: {course.max_players || 4}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                {[1, 2, 3, 4].filter(n => n <= (course.max_players || 4)).map(n => (
+                  <button
+                    key={n}
+                    onClick={() => setNumPlayers(n)}
+                    className={`flex-1 py-3 rounded-xl border-2 font-bold transition-all ${numPlayers === n ? 'border-primary bg-primary text-black' : 'border-gray-50 bg-gray-50 dark:bg-gray-800 text-gray-400'}`}
+                  >
+                    {n}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <div className="flex items-center justify-between mb-4">
                 <span className="text-sm font-bold">{t.courseDetail.teeTimes}</span>
                 <div className="flex items-center gap-2 text-[10px] font-bold text-gray-400">
                   <span className="size-2 rounded-full bg-primary"></span> {t.common.am.toUpperCase()}
@@ -258,6 +277,7 @@ export const CourseDetail: React.FC = () => {
                 ))}
               </div>
             </div>
+
 
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4 mb-8">
               <div className="space-y-2 mb-4">
@@ -278,7 +298,7 @@ export const CourseDetail: React.FC = () => {
               <div className="flex justify-between items-end">
                 <span className="text-sm font-bold">{t.courseDetail.totalAmount}</span>
                 <div className="text-right">
-                  <span className="text-2xl font-black text-primary">{(currentPrice / 1000).toLocaleString()}k <span className="text-xs font-normal">VND</span></span>
+                  <span className="text-2xl font-black text-primary">{((currentPrice * numPlayers) / 1000).toLocaleString()}k <span className="text-xs font-normal">VND</span></span>
                 </div>
               </div>
             </div>
