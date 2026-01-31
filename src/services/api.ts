@@ -161,6 +161,23 @@ class ApiService {
   async getMyBookings() {
     return this.request('/bookings/my');
   }
+
+  async getBookingById(id: string) {
+    return this.request(`/bookings/${id}`);
+  }
+
+  async cancelBooking(id: string) {
+    return this.request(`/bookings/${id}/cancel`, {
+      method: 'PUT',
+    });
+  }
+
+  async rescheduleBooking(id: string, data: { tee_time_instance_id: string, play_date: string, tee_time: string }) {
+    return this.request(`/bookings/${id}/reschedule`, {
+      method: 'PUT',
+      body: JSON.stringify(data),
+    });
+  }
 }
 
 export const apiService = new ApiService();
