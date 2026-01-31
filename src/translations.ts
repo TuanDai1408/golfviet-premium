@@ -67,6 +67,27 @@ export interface Translations {
         nextDate: string;
         pointsPending: string;
         toTier: string;
+        cancelConfirmTitle: string;
+        cancelConfirmDesc: string;
+        confirmYes: string;
+        confirmNo: string;
+    };
+
+    // Chi tiết đặt chỗ / Chi tiết đặt chỗ / Booking details
+    bookingDetail: {
+        title: string;
+        ticketInfo: string;
+        courseInfo: string;
+        playDate: string;
+        teeTime: string;
+        players: string;
+        feesDetails: string;
+        greenFee: string;
+        caddieCart: string;
+        serviceCharge: string;
+        totalPrice: string;
+        backToDashboard: string;
+        cancelBooking: string;
     };
 
     // 코스 목록 / Danh sách sân golf / Course list
@@ -112,6 +133,7 @@ export interface Translations {
         caddieCart: string;
         totalAmount: string;
         bookNow: string;
+        pleaseSelectInfo: string;
         courseNotFound: string;
         internationalStandard: string;
         aboutDescription: string;
@@ -275,6 +297,13 @@ export interface Translations {
         languageChanged: string;
         loginFailed: string;
     };
+    reschedule: {
+        title: string;
+        selectNewDate: string;
+        selectNewTime: string;
+        confirmBtn: string;
+        success: string;
+    };
 }
 
 // 한국어 번역 / Bản dịch tiếng Hàn / Korean translations
@@ -335,6 +364,25 @@ export const ko: Translations = {
         nextDate: '다음',
         pointsPending: '대기 중',
         toTier: '까지',
+        cancelConfirmTitle: '예약 취소',
+        cancelConfirmDesc: '정말로 이 예약을 취소하시겠습니까? 이 작업은 되돌릴 수 없습니다.',
+        confirmYes: '예, 취소합니다',
+        confirmNo: '아니요',
+    },
+    bookingDetail: {
+        title: '티켓 상세 정보',
+        ticketInfo: '티켓 정보',
+        courseInfo: '코스 정보',
+        playDate: '플레이 날짜',
+        teeTime: '티타임',
+        players: '플레이어',
+        feesDetails: '요금 상세 정보',
+        greenFee: '그린피',
+        caddieCart: '캐디 및 카트',
+        serviceCharge: '서비스 요금',
+        totalPrice: '총 가격',
+        backToDashboard: '대시보드로 돌아가기',
+        cancelBooking: '예약 취소',
     },
     courseList: {
         mapView: '지도 보기',
@@ -376,6 +424,7 @@ export const ko: Translations = {
         caddieCart: '캐디 및 카트 (공유)',
         totalAmount: '총액',
         bookNow: '지금 예약',
+        pleaseSelectInfo: '모든 정보를 선택해주세요',
         courseNotFound: '코스를 찾을 수 없습니다.',
         internationalStandard: '국제 표준 코스',
         aboutDescription: '국제 표준으로 설계된 이 코스는 베트남에서 독특한 도전을 제공합니다. 깨끗한 그린, 전략적으로 배치된 벙커, 자연 경관을 통과하는 멋진 레이아웃을 갖추고 있습니다. 이 지역 최고의 골프 코스 중 하나로 자주 선정됩니다.',
@@ -523,6 +572,13 @@ export const ko: Translations = {
         languageChanged: '언어가 변경되었습니다',
         loginFailed: '로그인에 실패했습니다. 정보를 다시 확인해주세요',
     },
+    reschedule: {
+        title: '일정 변경',
+        selectNewDate: '새 날짜 선택',
+        selectNewTime: '새 티타임 선택',
+        confirmBtn: '변경 확인',
+        success: '일정이 성공적으로 변경되었습니다',
+    },
 };
 
 // 베트남어 번역 / Bản dịch tiếng Việt / Vietnamese translations
@@ -583,6 +639,25 @@ export const vi: Translations = {
         nextDate: 'Tiếp theo',
         pointsPending: 'đang chờ',
         toTier: 'để đạt',
+        cancelConfirmTitle: 'Hủy đặt chỗ',
+        cancelConfirmDesc: 'Bạn có chắc chắn muốn hủy đặt chỗ này không? Hành động này không thể hoàn tác.',
+        confirmYes: 'Có, hủy đặt chỗ',
+        confirmNo: 'Không',
+    },
+    bookingDetail: {
+        title: 'Chi tiết vé đặt chỗ',
+        ticketInfo: 'Thông tin vé',
+        courseInfo: 'Thông tin sân',
+        playDate: 'Ngày chơi',
+        teeTime: 'Giờ chơi',
+        players: 'Số người chơi',
+        feesDetails: 'Chi tiết các loại phí',
+        greenFee: 'Phí sân (Green Fee)',
+        caddieCart: 'Caddie & Xe điện',
+        serviceCharge: 'Phí dịch vụ',
+        totalPrice: 'Tổng thanh toán',
+        backToDashboard: 'Quay lại Bảng điều khiển',
+        cancelBooking: 'Hủy đặt chỗ',
     },
     courseList: {
         mapView: 'Xem bản đồ',
@@ -624,6 +699,7 @@ export const vi: Translations = {
         caddieCart: 'Caddie & Xe (Dùng chung)',
         totalAmount: 'Tổng cộng',
         bookNow: 'Đặt ngay',
+        pleaseSelectInfo: 'Vui lòng chọn đầy đủ thông tin',
         courseNotFound: 'Không tìm thấy sân golf.',
         internationalStandard: 'Sân golf tiêu chuẩn quốc tế',
         aboutDescription: 'Được thiết kế theo tiêu chuẩn quốc tế, sân golf này mang đến thử thách độc đáo tại Việt Nam. Với green nguyên sơ, bunker được đặt chiến lược và bố cục tuyệt đẹp chạy qua cảnh quan tự nhiên. Thường xuyên được xếp hạng trong số các sân golf hàng đầu khu vực.',
@@ -771,6 +847,13 @@ export const vi: Translations = {
         languageChanged: 'Đã đổi ngôn ngữ thành công',
         loginFailed: 'Đăng nhập thất bại. Vui lòng kiểm tra lại thông tin',
     },
+    reschedule: {
+        title: 'Đổi lịch chơi',
+        selectNewDate: 'Chọn ngày chơi mới',
+        selectNewTime: 'Chọn giờ chơi mới',
+        confirmBtn: 'Xác nhận đổi lịch',
+        success: 'Đổi lịch chơi thành công',
+    },
 };
 
 // 영어 번역 / Bản dịch tiếng Anh / English translations
@@ -831,6 +914,25 @@ export const en: Translations = {
         nextDate: 'Next',
         pointsPending: 'pending',
         toTier: 'to',
+        cancelConfirmTitle: 'Cancel Booking',
+        cancelConfirmDesc: 'Are you sure you want to cancel this booking? This action cannot be undone.',
+        confirmYes: 'Yes, Cancel',
+        confirmNo: 'No',
+    },
+    bookingDetail: {
+        title: 'Booking Ticket Details',
+        ticketInfo: 'Ticket Information',
+        courseInfo: 'Course Information',
+        playDate: 'Play Date',
+        teeTime: 'Tee Time',
+        players: 'Players',
+        feesDetails: 'Fees Details',
+        greenFee: 'Green Fee',
+        caddieCart: 'Caddie & Cart',
+        serviceCharge: 'Service Charge',
+        totalPrice: 'Total Price',
+        backToDashboard: 'Back to Dashboard',
+        cancelBooking: 'Cancel Booking',
     },
     courseList: {
         mapView: 'Map View',
@@ -872,6 +974,7 @@ export const en: Translations = {
         caddieCart: 'Caddie & Cart (Shared)',
         totalAmount: 'Total Amount',
         bookNow: 'Book Now',
+        pleaseSelectInfo: 'Please select all information',
         courseNotFound: 'Course not found.',
         internationalStandard: 'International Standard Course',
         aboutDescription: 'Designed to international standards, this course offers a unique challenge in Vietnam. Featuring pristine greens, strategically placed bunkers, and a stunning layout that flows through natural landscapes. It is frequently ranked among the top golf courses in the region.',
@@ -1017,7 +1120,14 @@ export const en: Translations = {
         invalidPhone: 'Invalid phone number format',
         nameRequired: 'Please enter your full name',
         languageChanged: 'Language changed successfully',
-        loginFailed: 'Login failed. Please check your credentials',
+        loginFailed: 'Login failed. Please check your information',
+    },
+    reschedule: {
+        title: 'Reschedule Booking',
+        selectNewDate: 'Select New Date',
+        selectNewTime: 'Select New Tee Time',
+        confirmBtn: 'Confirm Reschedule',
+        success: 'Booking rescheduled successfully',
     },
 };
 

@@ -15,6 +15,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import AuthCallback from './pages/AuthCallback';
 import { Profile } from './pages/Profile';
+import BookingDetail from './pages/BookingDetail';
 
 const App: React.FC = () => {
   return (
@@ -35,6 +36,7 @@ const App: React.FC = () => {
                 <Route path="/register" element={<Register />} />
                 <Route path="/auth/callback" element={<AuthCallback />} />
                 <Route path="/profile" element={<Profile />} />
+                <Route path="/booking/:id" element={<BookingDetail />} />
                 <Route path="*" element={<Navigate to="/" replace />} />
               </Routes>
             </Layout>

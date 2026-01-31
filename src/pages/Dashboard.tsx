@@ -8,6 +8,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext'; // 언어 훅 / Hook ngôn ngữ / Language hook
 import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
+import { useToast } from '../contexts/ToastContext';
+import RescheduleModal from '../components/RescheduleModal';
 
 // 통계 카드 컴포넌트 / Component thẻ thống kê / Stats card component
 const StatsCard: React.FC<{ icon: string, label: string, value: string, sub: string, color: string }> = ({ icon, label, value, sub, color }) => (
@@ -31,6 +33,9 @@ export const Dashboard: React.FC = () => {
   const [view, setView] = useState<'Upcoming' | 'Past'>('Upcoming');
   const [bookings, setBookings] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showCancelConfirm, setShowCancelConfirm] = useState<string | null>(null);
+  const [rescheduleBooking, setRescheduleBooking] = useState<any | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     if (!user) {
@@ -52,15 +57,87 @@ export const Dashboard: React.FC = () => {
     fetchBookings();
   }, [user, navigate]);
 
+  const fetchBookings = async () => {
+    try {
+      const data = await apiService.getMyBookings();
+      setBookings(data);
+    } catch (error) {
+      console.error('Failed to fetch bookings:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelBooking = async () => {
+    if (!showCancelConfirm) return;
+    try {
+      await apiService.cancelBooking(showCancelConfirm);
+      showToast('success', t.common.success);
+      fetchBookings(); // Refresh list
+    } catch (error) {
+      console.error('Failed to cancel booking:', error);
+      showToast('error', t.common.error);
+    } finally {
+      setShowCancelConfirm(null);
+    }
+  };
+
   if (loading) return <div className="p-20 text-center">Loading dashboard...</div>;
 
-  // Sắp xếp booking theo ngày mới nhất
-  const sortedBookings = [...bookings].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+  // Lấy ngày hiện tại để so sánh (chỉ lấy phần ngày YYYY-MM-DD)
+  const todayStr = new Date().toISOString().split('T')[0];
 
-  // Lấy booking sắp tới (logic đơn giản: booking đầu tiên trong list đã sort - thực tế nên check ngày > hiện tại)
-  // Demo: Lấy booking mới nhất làm "Next Tee Time"
-  const nextBooking = sortedBookings[0];
-  const nextCourse = nextBooking ? (nextBooking.golf_courses || MOCK_COURSES.find(c => c.id === nextBooking.golf_course_id)) : null;
+  // Helper để lấy dữ liệu ngày giờ linh hoạt từ nhiều nguồn (đề phòng Supabase trả về cấu trúc khác nhau)
+  const getBookingDateTime = (b: any) => {
+    // Thử lấy từ quan hệ plural (tee_time_instances)
+    const tti_plural = Array.isArray(b.tee_time_instances) ? b.tee_time_instances[0] : b.tee_time_instances;
+    // Thử lấy từ quan hệ singular hoặc alias (tee_time_instance)
+    const tti_singular = b.tee_time_instance;
+
+    const play_date = tti_plural?.play_date || tti_singular?.play_date || b.play_date || b.playDate;
+    const tee_time = tti_plural?.tee_time || tti_singular?.tee_time || b.tee_time || b.teeTime;
+
+    return { play_date, tee_time };
+  };
+
+  // Helper để lấy dữ liệu sân golf linh hoạt
+  const getCourseData = (b: any) => {
+    return Array.isArray(b.golf_courses) ? b.golf_courses[0] : b.golf_courses;
+  };
+
+  // Lọc và sắp xếp các booking chưa bị hủy và trong tương lai cho mục "Next Tee Time"
+  const activeUpcomingBookings = bookings
+    .filter(b => {
+      const { play_date } = getBookingDateTime(b);
+      return b.status !== 'cancelled' && play_date && play_date >= todayStr;
+    })
+    .sort((a, b) => {
+      const dtA = getBookingDateTime(a);
+      const dtB = getBookingDateTime(b);
+      const dateA = dtA.play_date || '';
+      const dateB = dtB.play_date || '';
+      if (dateA !== dateB) return dateA.localeCompare(dateB);
+      const timeA = dtA.tee_time || '';
+      const timeB = dtB.tee_time || '';
+      return timeA.localeCompare(timeB);
+    });
+
+  // Lấy "Next Tee Time" là booking gần nhất trong tương lai và CHƯA BỊ HỦY
+  const nextBooking = activeUpcomingBookings[0];
+  const nextDateTime = nextBooking ? getBookingDateTime(nextBooking) : null;
+  const nextCourseData = nextBooking ? getCourseData(nextBooking) : null;
+  const nextCourseImage = (nextCourseData?.images && nextCourseData.images.length > 0)
+    ? nextCourseData.images[0]
+    : 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=2070&auto=format&fit=crop';
+
+  // Danh sách đặt chỗ hiển thị toàn bộ (người dùng muốn kiểm tra đầy đủ các sân)
+  const displayBookings = [...bookings].sort((a, b) => {
+    const dtA = getBookingDateTime(a);
+    const dtB = getBookingDateTime(b);
+    const dateA = dtA.play_date || '';
+    const dateB = dtB.play_date || '';
+    return dateB.localeCompare(dateA);
+  });
 
   return (
     <div className="max-w-[1200px] mx-auto py-8 px-4 sm:px-6 lg:px-8 flex flex-col gap-8">
@@ -93,7 +170,7 @@ export const Dashboard: React.FC = () => {
       {/* 통계 카드 / Thẻ thống kê / Stats cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard icon="sports_golf" label={t.dashboard.totalGames} value={`${bookings.length}`} sub={`+${bookings.filter(b => new Date(b.created_at).getMonth() === new Date().getMonth()).length} ${t.dashboard.thisMonth}`} color="bg-blue-100 text-blue-600 dark:bg-blue-900/30" />
-        <StatsCard icon="calendar_month" label={t.dashboard.upcomingGames} value={`${sortedBookings.length}`} sub={`${t.dashboard.nextDate}: ${nextBooking?.tee_time_instances?.play_date || '--'}`} color="bg-green-100 text-green-600 dark:bg-green-900/30" />
+        <StatsCard icon="calendar_month" label={t.dashboard.upcomingGames} value={`${activeUpcomingBookings.length}`} sub={`${t.dashboard.nextDate}: ${nextDateTime?.play_date || '--'}`} color="bg-green-100 text-green-600 dark:bg-green-900/30" />
         <StatsCard icon="loyalty" label={t.dashboard.points} value={(user?.points || 0).toLocaleString()} sub={`+150 ${t.dashboard.pointsPending}`} color="bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30" />
 
         {/* 멤버십 카드 / Thẻ thành viên / Membership card */}
@@ -124,7 +201,7 @@ export const Dashboard: React.FC = () => {
           </h2>
 
           {/* 다음 티타임 카드 / Thẻ tee time tiếp theo / Next tee time card */}
-          {nextCourse && (
+          {nextBooking && nextCourseData && (
             <div className="group relative overflow-hidden rounded-2xl bg-surface-light dark:bg-surface-dark border border-[#dce5e0] dark:border-[#2a3c32] shadow-lg transition-all hover:shadow-xl">
               <div className="relative h-48 md:h-64 w-full">
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent z-10"></div>
@@ -134,13 +211,13 @@ export const Dashboard: React.FC = () => {
                     {t.dashboard.confirmed}
                   </span>
                 </div>
-                <div className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url(${nextCourse.image})` }}></div>
+                <div className="h-full w-full bg-cover bg-center transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url(${nextCourseImage})` }}></div>
                 <div className="absolute bottom-0 left-0 z-20 p-6 w-full">
-                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{nextCourse.name}</h3>
+                  <h3 className="text-2xl md:text-3xl font-bold text-white mb-2">{nextCourseData.name}</h3>
                   <div className="flex flex-wrap items-center gap-4 text-white/90 text-sm md:text-base font-medium">
-                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">calendar_month</span> {nextBooking.tee_time_instances?.play_date || new Date(nextBooking.created_at).toLocaleDateString()}</span>
-                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">schedule</span> {nextBooking.tee_time_instances?.tee_time || '07:00'}</span>
-                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">location_on</span> {nextCourse.address || nextCourse.city}</span>
+                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">calendar_month</span> {nextDateTime?.play_date || 'Chưa cập nhật'}</span>
+                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">schedule</span> {nextDateTime?.tee_time || 'Chưa cập nhật'}</span>
+                    <span className="flex items-center gap-1.5"><span className="material-symbols-outlined text-primary">location_on</span> {nextCourseData.address}</span>
                   </div>
                 </div>
               </div>
@@ -156,8 +233,23 @@ export const Dashboard: React.FC = () => {
                   </div>
                 </div>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
-                  <button className="flex-1 sm:flex-none px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-red-600 dark:text-red-400 font-bold text-sm">{t.dashboard.cancel}</button>
+                  {nextBooking.status !== 'cancelled' && (
+                    <button
+                      onClick={() => setShowCancelConfirm(nextBooking.id)}
+                      className="flex-1 sm:flex-none px-4 py-2.5 rounded-lg border border-gray-200 dark:border-gray-700 text-red-600 dark:text-red-400 font-bold text-sm"
+                    >
+                      {t.dashboard.cancel}
+                    </button>
+                  )}
                   <Link to={`/booking/${nextBooking.id}`} className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg bg-[#111814] dark:bg-white text-white dark:text-[#111814] font-bold text-sm text-center">{t.dashboard.viewTicket}</Link>
+                  {nextDateTime?.play_date && nextDateTime.play_date > todayStr && nextBooking.status !== 'cancelled' && (
+                    <button
+                      onClick={() => setRescheduleBooking(nextBooking)}
+                      className="flex-1 sm:flex-none px-6 py-2.5 rounded-lg border-2 border-primary text-primary font-bold text-sm text-center hover:bg-primary/5 transition-colors"
+                    >
+                      {t.common.reschedule}
+                    </button>
+                  )}
                 </div>
               </div>
             </div>
@@ -165,34 +257,58 @@ export const Dashboard: React.FC = () => {
 
           {/* 예정된 예약 목록 / Danh sách đặt chỗ sắp tới / Upcoming reservations list */}
           <h2 className="text-lg font-bold mt-4">{t.dashboard.upcomingReservations}</h2>
-          {sortedBookings.slice(1).map((booking) => {
-            const course = booking.golf_courses || MOCK_COURSES.find(c => c.id === booking.golf_course_id);
-            const playDate = booking.tee_time_instances?.play_date || new Date(booking.created_at).toLocaleDateString();
-            const teeTime = booking.tee_time_instances?.tee_time || '07:00';
+          {displayBookings.map((booking) => {
+            const course = getCourseData(booking);
+            if (!course) return null;
+
+            const { play_date, tee_time } = getBookingDateTime(booking);
+            const courseImage = (course.images && course.images.length > 0)
+              ? course.images[0]
+              : 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=2070&auto=format&fit=crop';
+
             return (
               <div key={booking.id} className="group flex flex-col sm:flex-row gap-4 p-4 rounded-xl bg-surface-light dark:bg-surface-dark border border-[#dce5e0] dark:border-[#2a3c32] hover:border-primary transition-all">
-                <img src={course?.image} className="sm:w-32 h-32 sm:h-auto shrink-0 rounded-lg object-cover" alt="" />
+                <img src={courseImage} className="sm:w-32 h-32 sm:h-auto shrink-0 rounded-lg object-cover" alt="" />
                 <div className="flex-1 flex flex-col justify-between">
                   <div className="flex justify-between items-start">
                     <div>
-                      <h3 className="text-lg font-bold">{course?.name}</h3>
-                      <p className="text-text-secondary text-sm">{course?.city}, {t.common.vietnam}</p>
+                      <h3 className="text-lg font-bold">{course.name}</h3>
+                      <p className="text-text-secondary text-sm">{course.address}</p>
                     </div>
                     <span className="px-2.5 py-1 rounded bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-400 text-xs font-bold uppercase">{booking.status}</span>
                   </div>
                   <div className="grid grid-cols-2 gap-4 my-3">
                     <div className="flex items-center gap-2 text-sm">
                       <span className="material-symbols-outlined text-primary text-lg">calendar_month</span>
-                      <span>{playDate}</span>
+                      <span>{play_date || 'Chưa cập nhật'}</span>
                     </div>
                     <div className="flex items-center gap-2 text-sm">
                       <span className="material-symbols-outlined text-primary text-lg">schedule</span>
-                      <span>{teeTime}</span>
+                      <span>{tee_time || 'Chưa cập nhật'}</span>
                     </div>
                   </div>
                   <div className="flex items-center justify-end gap-3 pt-2 border-t border-gray-100 dark:border-[#2a3c32]">
-                    <button className="text-sm font-medium text-text-secondary hover:text-text-main">{t.common.details}</button>
-                    <button className="text-sm font-bold text-primary">{t.common.reschedule}</button>
+                    <Link to={`/booking/${booking.id}`} className="text-sm font-medium text-text-secondary hover:text-text-main">{t.common.details}</Link>
+                    {booking.status !== 'cancelled' ? (
+                      <div className="flex gap-3">
+                        {play_date && play_date > todayStr && (
+                          <button
+                            onClick={() => setRescheduleBooking(booking)}
+                            className="text-sm font-bold text-primary hover:underline"
+                          >
+                            {t.common.reschedule}
+                          </button>
+                        )}
+                        <button
+                          onClick={() => setShowCancelConfirm(booking.id)}
+                          className="text-sm font-bold text-red-600 hover:underline"
+                        >
+                          {t.dashboard.cancel}
+                        </button>
+                      </div>
+                    ) : (
+                      <span className="text-sm font-bold text-gray-400 uppercase">{booking.status}</span>
+                    )}
                   </div>
                 </div>
               </div>
@@ -233,8 +349,8 @@ export const Dashboard: React.FC = () => {
               <span className="material-symbols-outlined text-8xl">wb_sunny</span>
             </div>
             <div className="relative z-10">
-              <p className="text-sm font-medium text-blue-100">{t.dashboard.forecast} {nextBooking?.tee_time_instances?.play_date}</p>
-              <h3 className="font-bold text-xl mt-1">{nextCourse?.city || nextCourse?.address}</h3>
+              <p className="text-sm font-medium text-blue-100">{t.dashboard.forecast} {nextDateTime?.play_date || todayStr}</p>
+              <h3 className="font-bold text-xl mt-1">{nextCourseData?.address || 'Vietnam'}</h3>
               <div className="flex items-center gap-4 mt-4">
                 <span className="text-5xl font-bold tracking-tighter">28°</span>
                 <div className="text-sm text-blue-100">
@@ -246,6 +362,45 @@ export const Dashboard: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Cancellation Confirmation Popup */}
+      {showCancelConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+          <div className="bg-white dark:bg-surface-dark rounded-3xl p-8 max-w-md w-full shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div className="size-16 rounded-full bg-red-100 dark:bg-red-900/30 text-red-600 flex items-center justify-center mx-auto mb-6">
+              <span className="material-symbols-outlined text-4xl">warning</span>
+            </div>
+            <h3 className="text-2xl font-black text-center mb-2">{t.dashboard.cancelConfirmTitle}</h3>
+            <p className="text-text-secondary text-center mb-8">{t.dashboard.cancelConfirmDesc}</p>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <button
+                onClick={() => setShowCancelConfirm(null)}
+                className="flex-1 px-6 py-3.5 rounded-xl bg-gray-100 dark:bg-gray-800 font-bold hover:bg-gray-200 transition-colors"
+              >
+                {t.dashboard.confirmNo}
+              </button>
+              <button
+                onClick={handleCancelBooking}
+                className="flex-1 px-6 py-3.5 rounded-xl bg-red-600 text-white font-bold hover:bg-red-700 transition-colors shadow-lg shadow-red-600/20"
+              >
+                {t.dashboard.confirmYes}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Reschedule Modal */}
+      {rescheduleBooking && (
+        <RescheduleModal
+          booking={rescheduleBooking}
+          onClose={() => setRescheduleBooking(null)}
+          onSuccess={() => {
+            setRescheduleBooking(null);
+            fetchBookings();
+          }}
+        />
+      )}
     </div>
   );
 };
