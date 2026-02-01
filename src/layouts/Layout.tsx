@@ -8,6 +8,7 @@ import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { ContactWidget } from '../components/ContactWidget';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -162,61 +163,64 @@ export const Layout: React.FC<LayoutProps> = ({ children }) => {
   const { t } = useLanguage(); // 번역 객체 가져오기 / Lấy đối tượng dịch / Get translation object
 
   return (
-    <div className="min-h-screen flex flex-col">
-      {/* 네비게이션 바 / Thanh điều hướng / Navigation bar */}
+    <div className="min-h-screen flex flex-col relative">
       <Navbar />
-
-      {/* 메인 콘텐츠 영역 / Khu vực nội dung chính / Main content area */}
       <main className="flex-1">
         {children}
       </main>
+      <Footer />
+      <ContactWidget />
+    </div>
+  );
+};
 
-      {/* 푸터 / Footer / Footer */}
-      <footer className="bg-background-dark text-white/60 py-12 border-t border-white/5">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          {/* 푸터 그리드 / Grid footer / Footer grid */}
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-            {/* 회사 정보 / Thông tin công ty / Company info */}
-            <div className="col-span-1 md:col-span-2">
-              <div className="flex items-center gap-2 mb-4 text-white">
-                <span className="material-symbols-outlined text-primary">sports_golf</span>
-                <span className="text-lg font-bold">GolfViet</span>
-              </div>
-              <p className="text-sm leading-relaxed max-w-sm">
-                {t.footer.description}
-              </p>
+const Footer: React.FC = () => {
+  const { t } = useLanguage();
+  return (
+    <footer className="bg-background-dark text-white/60 py-12 border-t border-white/5">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* 푸터 그리드 / Grid footer / Footer grid */}
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+          {/* 회사 정보 / Thông tin công ty / Company info */}
+          <div className="col-span-1 md:col-span-2">
+            <div className="flex items-center gap-2 mb-4 text-white">
+              <span className="material-symbols-outlined text-primary">sports_golf</span>
+              <span className="text-lg font-bold">GolfViet</span>
             </div>
-
-            {/* 회사 링크 / Liên kết công ty / Company links */}
-            <div>
-              <h4 className="text-white font-bold mb-4">{t.footer.company}</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a className="hover:text-primary transition-colors" href="#">{t.footer.aboutUs}</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">{t.footer.careers}</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">{t.footer.press}</a></li>
-              </ul>
-            </div>
-
-            {/* 법률 링크 / Liên kết pháp lý / Legal links */}
-            <div>
-              <h4 className="text-white font-bold mb-4">{t.footer.legal}</h4>
-              <ul className="space-y-2 text-sm">
-                <li><a className="hover:text-primary transition-colors" href="#">{t.footer.terms}</a></li>
-                <li><a className="hover:text-primary transition-colors" href="#">{t.footer.privacy}</a></li>
-              </ul>
-            </div>
+            <p className="text-sm leading-relaxed max-w-sm">
+              {t.footer.description}
+            </p>
           </div>
 
-          {/* 하단 저작권 / Bản quyền dưới cùng / Bottom copyright */}
-          <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
-            <p className="text-xs">{t.footer.rights}</p>
-            <div className="flex gap-4">
-              <span className="material-symbols-outlined text-sm">public</span>
-              <span className="material-symbols-outlined text-sm">mail</span>
-            </div>
+          {/* 회사 링크 / Liên kết công ty / Company links */}
+          <div>
+            <h4 className="text-white font-bold mb-4">{t.footer.company}</h4>
+            <ul className="space-y-2 text-sm">
+              <li><a className="hover:text-primary transition-colors" href="#">{t.footer.aboutUs}</a></li>
+              <li><a className="hover:text-primary transition-colors" href="#">{t.footer.careers}</a></li>
+              <li><a className="hover:text-primary transition-colors" href="#">{t.footer.press}</a></li>
+            </ul>
+          </div>
+
+          {/* 법률 링크 / Liên kết pháp lý / Legal links */}
+          <div>
+            <h4 className="text-white font-bold mb-4">{t.footer.legal}</h4>
+            <ul className="space-y-2 text-sm">
+              <li><a className="hover:text-primary transition-colors" href="#">{t.footer.terms}</a></li>
+              <li><a className="hover:text-primary transition-colors" href="#">{t.footer.privacy}</a></li>
+            </ul>
           </div>
         </div>
-      </footer>
-    </div>
+
+        {/* 하단 저작권 / Bản quyền dưới cùng / Bottom copyright */}
+        <div className="pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4">
+          <p className="text-xs">{t.footer.rights}</p>
+          <div className="flex gap-4">
+            <span className="material-symbols-outlined text-sm">public</span>
+            <span className="material-symbols-outlined text-sm">mail</span>
+          </div>
+        </div>
+      </div>
+    </footer>
   );
 };
