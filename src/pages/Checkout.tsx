@@ -5,6 +5,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext'; // 언어 훅 / Hook ngôn ngữ / Language hook
+import { useAuth } from '../contexts/AuthContext';
 import { apiService } from '../services/api';
 
 // 체크아웃 페이지 컴포넌트 / Component trang thanh toán / Checkout page component
@@ -14,7 +15,14 @@ export const Checkout: React.FC = () => {
   const { t } = useLanguage(); // 번역 객체 가져오기 / Lấy đối tượng dịch / Get translation object
 
   const { booking, course, details } = location.state || {};
+  const { user } = useAuth();
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: user?.full_name || user?.name || '',
+    email: user?.email || '',
+    phone: user?.phone || '',
+    additionalRequest: ''
+  });
 
   useEffect(() => {
     if (!booking || !course) {
@@ -24,10 +32,15 @@ export const Checkout: React.FC = () => {
 
   if (!booking || !course) return null;
 
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
   const handlePayment = async () => {
     try {
       setLoading(true);
-      // Simulate payment delay
+      // Simulate confirmation delay
       await new Promise(resolve => setTimeout(resolve, 1500));
 
       // Confirm booking in backend
@@ -42,8 +55,8 @@ export const Checkout: React.FC = () => {
         }
       });
     } catch (error) {
-      console.error('Payment failed:', error);
-      alert('Payment failed. Please try again.');
+      console.error('Booking failed:', error);
+      alert('Booking failed. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -119,50 +132,74 @@ export const Checkout: React.FC = () => {
           </div>
         </div>
 
-        {/* 결제 폼 / Form thanh toán / Payment form */}
+        {/* 사용자 정보 및 확인 폼 / Form thông tin người dùng và xác nhận / User info and confirmation form */}
         <div className="lg:col-span-7 order-1 lg:order-2">
           <div className="bg-white dark:bg-surface-dark rounded-xl shadow-xl border border-gray-100 dark:border-white/5 p-8">
-            <h2 className="text-xl font-bold mb-6">{t.checkout.paymentMethod}</h2>
+            <h2 className="text-xl font-bold mb-6">{t.checkout.userInfo}</h2>
 
-            {/* 결제 방법 선택 / Chọn phương thức thanh toán / Payment method selection */}
-            <div className="grid grid-cols-3 gap-4 mb-8">
-              <button className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-primary bg-primary/5">
-                <span className="material-symbols-outlined text-3xl mb-1">credit_card</span>
-                <span className="text-xs font-bold">{t.checkout.card}</span>
-              </button>
-              <button className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 hover:bg-gray-50">
-                <span className="material-symbols-outlined text-3xl mb-1">chat</span>
-                <span className="text-xs font-bold">KakaoPay</span>
-              </button>
-              <button className="flex flex-col items-center justify-center p-4 rounded-xl border border-gray-100 hover:bg-gray-50">
-                <span className="material-symbols-outlined text-3xl mb-1">account_balance_wallet</span>
-                <span className="text-xs font-bold">Toss</span>
-              </button>
-            </div>
-
-            {/* 카드 정보 입력 폼 / Form nhập thông tin thẻ / Card information form */}
             <form className="space-y-6">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{t.checkout.cardNumber}</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{t.checkout.fullName}</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
-                    <span className="material-symbols-outlined text-lg">credit_card</span>
+                    <span className="material-symbols-outlined text-lg">person</span>
                   </span>
-                  <input type="text" className="w-full h-14 bg-gray-50 border-none rounded-xl pl-12 font-bold tracking-widest" placeholder="0000 0000 0000 0000" />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{t.checkout.expiryDate}</label>
-                  <input type="text" className="w-full h-14 bg-gray-50 border-none rounded-xl px-4 font-bold" placeholder="MM / YY" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{t.checkout.cvc}</label>
-                  <input type="text" className="w-full h-14 bg-gray-50 border-none rounded-xl px-4 font-bold" placeholder="123" />
+                  <input
+                    type="text"
+                    name="fullName"
+                    value={formData.fullName}
+                    onChange={handleInputChange}
+                    className="w-full h-14 bg-gray-50 border-none rounded-xl pl-12 font-bold"
+                  />
                 </div>
               </div>
 
-              {/* 결제 버튼 / Nút thanh toán / Payment button */}
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{t.checkout.phone}</label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                      <span className="material-symbols-outlined text-lg">call</span>
+                    </span>
+                    <input
+                      type="text"
+                      name="phone"
+                      value={formData.phone}
+                      onChange={handleInputChange}
+                      className="w-full h-14 bg-gray-50 border-none rounded-xl pl-12 font-bold"
+                    />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{t.checkout.email}</label>
+                  <div className="relative">
+                    <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
+                      <span className="material-symbols-outlined text-lg">mail</span>
+                    </span>
+                    <input
+                      type="email"
+                      name="email"
+                      value={formData.email}
+                      onChange={handleInputChange}
+                      className="w-full h-14 bg-gray-50 border-none rounded-xl pl-12 font-bold"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{t.checkout.additionalRequest}</label>
+                <textarea
+                  name="additionalRequest"
+                  value={formData.additionalRequest}
+                  onChange={handleInputChange}
+                  rows={4}
+                  placeholder={t.checkout.additionalRequestPlaceholder}
+                  className="w-full bg-gray-50 border-none rounded-xl p-4 font-medium"
+                />
+              </div>
+
+              {/* xác nhận đặt chỗ 버튼 / Nút xác nhận đặt chỗ / confirm booking button */}
               <button
                 type="button"
                 onClick={handlePayment}
@@ -172,9 +209,9 @@ export const Checkout: React.FC = () => {
                 {loading ? (
                   <span className="material-symbols-outlined animate-spin">progress_activity</span>
                 ) : (
-                  <span className="material-symbols-outlined">lock</span>
+                  <span className="material-symbols-outlined">check_circle</span>
                 )}
-                {t.checkout.pay} {booking.total_price.toLocaleString()} VND
+                {t.checkout.confirmBooking}
               </button>
               <p className="text-center text-xs text-gray-400">{t.checkout.secureNote}</p>
             </form>

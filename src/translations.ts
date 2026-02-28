@@ -164,6 +164,13 @@ export interface Translations {
         cvc: string;
         pay: string;
         secureNote: string;
+        userInfo: string;
+        fullName: string;
+        email: string;
+        phone: string;
+        additionalRequest: string;
+        additionalRequestPlaceholder: string;
+        confirmBooking: string;
     };
 
     // 확인 페이지 / Trang xác nhận / Confirmation
@@ -453,6 +460,13 @@ export const ko: Translations = {
         cvc: 'CVC',
         pay: '결제',
         secureNote: 'SSL을 통해 안전하게 처리됩니다. 결제하면 약관에 동의하는 것입니다.',
+        userInfo: '예약자 정보',
+        fullName: '성함',
+        email: '이메일',
+        phone: '전화번호',
+        additionalRequest: '추가 요청사항',
+        additionalRequestPlaceholder: '여기에 추가 요청사항을 입력하세요...',
+        confirmBooking: '예약 확인',
     },
     confirmation: {
         title: '예약 확인!',
@@ -727,7 +741,14 @@ export const vi: Translations = {
         expiryDate: 'Ngày hết hạn',
         cvc: 'CVC',
         pay: 'Thanh toán',
-        secureNote: 'Được xử lý an toàn qua SSL. Bằng việc thanh toán, bạn đồng ý với điều khoản.',
+        secureNote: 'SSL được bảo mật. Bằng cách đặt chỗ, bạn đồng ý với các điều khoản của chúng tôi.',
+        userInfo: 'Thông tin người đặt',
+        fullName: 'Họ và tên',
+        email: 'Email',
+        phone: 'Số điện thoại',
+        additionalRequest: 'Yêu cầu thêm',
+        additionalRequestPlaceholder: 'Nhập yêu cầu của bạn tại đây...',
+        confirmBooking: 'Xác nhận đặt chỗ',
     },
     confirmation: {
         title: 'Đặt chỗ đã xác nhận!',
@@ -1002,7 +1023,14 @@ export const en: Translations = {
         expiryDate: 'Expiry Date',
         cvc: 'CVC',
         pay: 'Pay',
-        secureNote: 'Securely processed via SSL. By paying you agree to terms.',
+        secureNote: 'SSL secured. By booking you agree to our terms.',
+        userInfo: 'Guest Information',
+        fullName: 'Full Name',
+        email: 'Email',
+        phone: 'Phone Number',
+        additionalRequest: 'Additional Requests',
+        additionalRequestPlaceholder: 'Enter your additional requests here...',
+        confirmBooking: 'Confirm Booking',
     },
     confirmation: {
         title: 'Booking Confirmed!',
