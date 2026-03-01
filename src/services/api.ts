@@ -152,9 +152,10 @@ class ApiService {
     });
   }
 
-  async confirmBooking(bookingId: string) {
+  async confirmBooking(bookingId: string, data?: any) {
     return this.request(`/bookings/${bookingId}/confirm`, {
       method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
     });
   }
 

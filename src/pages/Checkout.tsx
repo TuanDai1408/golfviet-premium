@@ -43,8 +43,12 @@ export const Checkout: React.FC = () => {
       // Simulate confirmation delay
       await new Promise(resolve => setTimeout(resolve, 1500));
 
-      // Confirm booking in backend
-      await apiService.confirmBooking(booking.id);
+      // Confirm booking in backend with user info
+      await apiService.confirmBooking(booking.id, {
+        fullName: formData.fullName,
+        phone: formData.phone,
+        additionalRequests: formData.additionalRequest
+      });
 
       navigate('/confirmation', {
         state: {
@@ -139,7 +143,9 @@ export const Checkout: React.FC = () => {
 
             <form className="space-y-6">
               <div>
-                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{t.checkout.fullName}</label>
+                <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
+                  {t.checkout.fullName} <span className="text-red-500">*</span>
+                </label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
                     <span className="material-symbols-outlined text-lg">person</span>
@@ -156,7 +162,9 @@ export const Checkout: React.FC = () => {
 
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">{t.checkout.phone}</label>
+                  <label className="block text-xs font-bold text-gray-500 uppercase tracking-widest mb-2">
+                    {t.checkout.phone} <span className="text-red-500">*</span>
+                  </label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 flex items-center pl-4 text-gray-400">
                       <span className="material-symbols-outlined text-lg">call</span>
@@ -203,8 +211,8 @@ export const Checkout: React.FC = () => {
               <button
                 type="button"
                 onClick={handlePayment}
-                disabled={loading}
-                className="w-full h-14 bg-primary hover:bg-primary-dark text-black font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading || !formData.fullName.trim() || !formData.phone.trim()}
+                className="w-full h-14 bg-primary hover:bg-primary-dark text-black font-bold rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-30 disabled:grayscale disabled:cursor-not-allowed"
               >
                 {loading ? (
                   <span className="material-symbols-outlined animate-spin">progress_activity</span>
