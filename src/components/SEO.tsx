@@ -14,7 +14,7 @@ const SEO: React.FC<SEOProps> = ({
   title,
   description,
   keywords,
-  image = 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?q=80&w=1200',
+  image = '/logo.png',
   url = window.location.href,
   type = 'website',
 }) => {

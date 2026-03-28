@@ -42,11 +42,9 @@ const Navbar: React.FC = () => {
       <div className="max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* 로고 / Logo / Logo */}
-          <Link to="/" className="flex items-center gap-3">
-            <div className="size-8 flex items-center justify-center text-primary">
-              <span className="material-symbols-outlined text-3xl">sports_golf</span>
-            </div>
-            <h1 className="text-xl font-bold tracking-tight text-text-main dark:text-white">Golf<span className="text-primary">Viet</span></h1>
+          <Link to="/" className="flex items-center gap-2">
+            <img src="/logo.png" alt="GolfViet Logo" className="h-10 w-auto" />
+            <h1 className="text-xl font-bold tracking-tight text-text-main dark:text-white hidden sm:block">Golf<span className="text-primary">Viet</span></h1>
           </Link>
 
           {/* 데스크톱 네비게이션 메뉴 / Menu điều hướng desktop / Desktop navigation menu */}
@@ -184,7 +182,7 @@ const Footer: React.FC = () => {
           {/* 회사 정보 / Thông tin công ty / Company info */}
           <div className="col-span-1 md:col-span-2">
             <div className="flex items-center gap-2 mb-4 text-white">
-              <span className="material-symbols-outlined text-primary">sports_golf</span>
+              <img src="/logo.png" alt="GolfViet Logo" className="h-8 w-auto brightness-0 invert" />
               <span className="text-lg font-bold">GolfViet</span>
             </div>
             <p className="text-sm leading-relaxed max-w-sm">
