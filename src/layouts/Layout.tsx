@@ -43,7 +43,7 @@ const Navbar: React.FC = () => {
         <div className="flex items-center justify-between h-16">
           {/* 로고 / Logo / Logo */}
           <Link to="/" className="flex items-center gap-2">
-            <img src="/logo.png" alt="GolfViet Logo" className="h-10 w-auto" />
+            <img src="/logo.png" alt="GolfViet Logo" className="h-12 w-auto" />
             <h1 className="text-xl font-bold tracking-tight text-text-main dark:text-white hidden sm:block">Golf<span className="text-primary">Viet</span></h1>
           </Link>
 
