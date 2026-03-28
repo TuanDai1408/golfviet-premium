@@ -72,6 +72,24 @@ export const CourseDetail: React.FC = () => {
   const availableTeeTimes = (course.tee_times && course.tee_times.length > 0) ? course.tee_times : ['06:00', '06:15', '06:30', '06:45', '07:00', '07:15', '07:30', '07:45'];
   const courseImages = course.images && course.images.length > 0 ? course.images : [course.image || 'https://images.unsplash.com/photo-1587174486073-ae5e5cff23aa?auto=format&fit=crop&q=80&w=800'];
 
+  // Construct JSON-LD schema for SEO
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "GolfCourse",
+    "name": course.name,
+    "description": course.description || t.courseDetail.aboutDescription,
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": course.address || course.location,
+      "addressLocality": course.region || "",
+      "addressCountry": "VN"
+    },
+    "image": courseImages,
+    "priceRange": "VND",
+    "telephone": "+84",
+    "url": window.location.href
+  };
+
   // Current day pricing - updates based on selectedDate
   const isWeekend = [0, 6].includes(new Date(selectedDate).getDay());
   const currentPrice = isWeekend
@@ -131,6 +149,9 @@ export const CourseDetail: React.FC = () => {
         keywords={`${course.name}, đặt sân golf ${course.region}, golf ${course.location}`}
         image={courseImages[0]}
       />
+      <script type="application/ld+json">
+        {JSON.stringify(jsonLd)}
+      </script>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[300px] md:h-[480px] mb-8 rounded-2xl overflow-hidden shadow-lg">
           <div className="md:col-span-2 md:row-span-2 relative">
