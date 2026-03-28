@@ -2,6 +2,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
 import { apiService } from '../services/api';
+import SEO from '../components/SEO';
 
 export const CourseList: React.FC = () => {
   const { t } = useLanguage();
@@ -128,6 +129,11 @@ export const CourseList: React.FC = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col lg:flex-row gap-8 relative">
+      <SEO 
+        title="Danh sách Sân Golf - Đặt chỗ nhanh, giá tốt"
+        description="Khám phá danh sách các sân golf hàng đầu tại Việt Nam. Lọc theo khu vực, giá cả và số hố để tìm sân golf phù hợp nhất với nhu cầu của bạn."
+        keywords="danh sách sân golf, sân golf hà nội, sân golf đà nẵng, sân golf hồ chí minh"
+      />
       {/* Mobile Filter Toggle */}
       <button
         onClick={() => setShowMobileFilter(true)}

@@ -4,6 +4,7 @@ import { apiService } from '../services/api';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useToast } from '../contexts/ToastContext';
+import SEO from '../components/SEO';
 
 export const CourseDetail: React.FC = () => {
   const { id } = useParams();
@@ -124,6 +125,12 @@ export const CourseDetail: React.FC = () => {
 
   return (
     <>
+      <SEO 
+        title={`${course.name} - Đặt sân Golf trực tuyến`}
+        description={`Đặt chỗ tại ${course.name}. ${course.description ? course.description.slice(0, 150) + '...' : t.courseDetail.aboutDescription}`}
+        keywords={`${course.name}, đặt sân golf ${course.region}, golf ${course.location}`}
+        image={courseImages[0]}
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 h-[300px] md:h-[480px] mb-8 rounded-2xl overflow-hidden shadow-lg">
           <div className="md:col-span-2 md:row-span-2 relative">

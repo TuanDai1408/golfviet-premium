@@ -6,6 +6,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { apiService } from '../services/api';
 import { useLanguage } from '../contexts/LanguageContext';
+import SEO from '../components/SEO';
 
 export const Home: React.FC = () => {
   const { t } = useLanguage();
@@ -63,6 +64,11 @@ export const Home: React.FC = () => {
 
   return (
     <div className="flex flex-col w-full">
+      <SEO 
+        title="Trang chủ - Đặt sân Golf trực tuyến uy tín"
+        description="GolfViet Premium - Hệ thống đặt sân golf trực tuyến hàng đầu Việt Nam. Đặt chỗ nhanh chóng tại Hà Nội, Đà Nẵng, TP.HCM với giá ưu đãi nhất."
+        keywords="đặt sân golf, golf việt nam, sân golf hà nội, sân golf hồ chí minh, golf premium"
+      />
       {/* 히어로 섹션 / Phần hero / Hero section */}
       <section className="relative w-full h-[600px] overflow-hidden">
         <div className="absolute inset-0 z-0">
